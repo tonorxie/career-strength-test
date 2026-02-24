@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>盖洛普优势探索 · 飞书数据版</title>
+<title>盖洛普优势探索 · 30题版</title>
 <style>
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:linear-gradient(135deg,#eef2ff,#fdf4ff);color:#333;}
 .page{display:none;max-width:900px;margin:40px auto;background:white;padding:40px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.1);animation:fade .5s ease;}
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function() {
     problemBox.appendChild(div);
   });
 
-  // ======== 30题（14双选+16四选） ========
+  // ======== 30题 ========
   const questions=[
 {type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
 {type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
@@ -187,14 +187,13 @@ document.addEventListener("DOMContentLoaded", function() {
     answers[current]=checked.value;
     if(current<questions.length-1){current++;renderQuestion();}else{calculate();}
   }
-  window.prev=function(){if(current>0){current--;renderQuestion();}
-
-  }
+  window.prev=function(){if(current>0){current--;renderQuestion();}}
 
   // ======== 结果计算 ========
   function calculate(){
     for(let k in strengths){strengths[k]=0;}
     questions.forEach((q,i)=>{
+      if(!(q.map in strengths)) return; // 避免空白页
       if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
       if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
     });
