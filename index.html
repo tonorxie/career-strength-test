@@ -17,7 +17,6 @@ body{
   border-radius:16px;
   box-shadow:0 15px 40px rgba(0,0,0,0.1);
   overflow:hidden;
-  transition: all 0.3s ease;
 }
 h1,h2{text-align:center;color:#4f46e5;}
 button{
@@ -40,13 +39,13 @@ button:hover{background:#4338ca;}
   margin-bottom:20px;
   box-shadow:0 4px 12px rgba(0,0,0,0.08);
   display:none;
-  transform: translateX(50px);
+  transform: rotateY(15deg);
   opacity:0;
-  transition:all 0.4s ease;
+  transition:all 0.5s ease;
 }
 .card.active{
   display:block;
-  transform: translateX(0);
+  transform: rotateY(0deg);
   opacity:1;
 }
 .progress-bar{
@@ -63,15 +62,7 @@ button:hover{background:#4338ca;}
   transition: width 0.5s ease;
 }
 .blur{filter: blur(6px);}
-.fade{
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}
-.nav-buttons{
-  text-align:center;
-}
+.nav-buttons{text-align:center;}
 </style>
 </head>
 <body>
@@ -84,7 +75,7 @@ button:hover{background:#4338ca;}
 <div id="quiz"></div>
 <div class="nav-buttons">
 <button id="prevBtn" onclick="prevQuestion()" style="display:none;">← 上一题</button>
-<button id="submitBtn" onclick="calculate()">提交测试</button>
+<button id="submitBtn" onclick="calculate()" style="display:none;">提交测试</button>
 </div>
 
 <div id="result"></div>
@@ -93,12 +84,13 @@ button:hover{background:#4338ca;}
 <script>
 // 34优势
 let strengths={"Achiever":0,"Activator":0,"Adaptability":0,"Analytical":0,"Arranger":0,"Belief":0,"Command":0,"Communication":0,"Competition":0,"Connectedness":0,"Consistency":0,"Context":0,"Deliberative":0,"Developer":0,"Discipline":0,"Empathy":0,"Focus":0,"Futuristic":0,"Harmony":0,"Ideation":0,"Includer":0,"Individualization":0,"Input":0,"Intellection":0,"Learner":0,"Maximizer":0,"Positivity":0,"Relator":0,"Responsibility":0,"Restorative":0,"Self-Assurance":0,"Significance":0,"Strategic":0,"Woo":0};
+
+// 中文解释
 let intro={"Achiever":"持续追求目标和成果，喜欢完成任务带来的成就感。","Activator":"善于快速行动，把想法付诸实践，带动他人行动。","Adaptability":"灵活应变，能在变化和不确定环境中保持稳定。","Analytical":"理性思考，喜欢分析数据和逻辑问题。","Arranger":"善于组织资源和人力，使工作高效有序。","Belief":"有坚定价值观和信念，行动受价值观指引。","Command":"有领导力，能在关键时刻做决定并带领团队。","Communication":"表达清晰，善于向他人传递信息和影响力。","Competition":"喜欢挑战和比较，追求更好的表现和成果。","Connectedness":"感受到人与人、事物间的联系和意义。","Consistency":"重视公平和规则，维持秩序和一致性。","Context":"喜欢理解过去背景，以指导未来行动。","Deliberative":"谨慎小心，擅长评估风险和潜在问题。","Developer":"善于发现他人潜力，喜欢帮助他人成长。","Discipline":"有条理，擅长计划和结构化工作。","Empathy":"能够理解他人情绪，并给予共情支持。","Focus":"专注目标，能够抵抗干扰完成任务。","Futuristic":"喜欢展望未来，想象可能性和机会。","Harmony":"追求和谐，避免冲突，善于协调关系。","Ideation":"思维活跃，喜欢创造新点子和概念。","Includer":"乐于接纳他人，善于把人纳入团队。","Individualization":"善于发现每个人的独特性并因人施策。","Input":"喜欢收集信息、知识和资源。","Intellection":"喜欢思考和反思，善于深度分析问题。","Learner":"持续学习，对新知识和技能充满热情。","Maximizer":"追求卓越，喜欢把优势发挥到极致。","Positivity":"积极乐观，能够鼓舞团队士气。","Relator":"重视深度关系，擅长建立信任和友谊。","Responsibility":"可靠、有担当，会认真履行承诺。","Restorative":"喜欢解决问题，善于修复漏洞和挑战。","Self-Assurance":"自信果断，相信自己的判断和能力。","Significance":"追求有影响力的成果，希望被认可。","Strategic":"善于制定策略，快速找到可行路径。","Woo":"善于建立联系，喜欢与陌生人互动和影响他人。"};
 
 // 30题示例
-let questions=[/* 同前34优势映射题，可复制前面30题 */];
+let questions=[/* 同前30题映射到34优势 */];
 
-// 生成题目卡片
 let quizDiv=document.getElementById("quiz");
 let cards=[],answers={};
 questions.forEach((q,i)=>{
@@ -116,30 +108,32 @@ questions.forEach((q,i)=>{
   cards.push(div);
 });
 let currentIndex=0;
-if(cards.length>0) cards[0].classList.add("active");
-document.getElementById("prevBtn").style.display="none";
+cards[0].classList.add("active");
+updateButtons();
+
+function updateButtons(){
+  document.getElementById("prevBtn").style.display=currentIndex>0?"inline-block":"none";
+  let allAnswered=Object.keys(answers).length===questions.length;
+  document.getElementById("submitBtn").style.display=allAnswered?"inline-block":"none";
+}
 
 function updateProgress(){
   let percent=((currentIndex)/questions.length)*100;
   document.getElementById("progress").style.width=percent+"%";
 }
 
-// 卡片切换
 cards.forEach((card,i)=>{
   let inputs=card.querySelectorAll("input[type=radio]");
   inputs.forEach(input=>{
     input.addEventListener("change",()=>{
       answers[i]=input.value;
       card.classList.remove("active");
-      currentIndex++;
-      if(currentIndex<cards.length){
+      if(currentIndex<cards.length-1){
+        currentIndex++;
         cards[currentIndex].classList.add("active");
-        updateProgress();
-        document.getElementById("prevBtn").style.display="inline-block";
-      }else{
-        document.getElementById("submitBtn").style.display="inline-block";
-        document.getElementById("prevBtn").style.display="inline-block";
       }
+      updateProgress();
+      updateButtons();
     });
   });
 });
@@ -150,13 +144,11 @@ function prevQuestion(){
     currentIndex--;
     cards[currentIndex].classList.add("active");
     updateProgress();
-    document.getElementById("submitBtn").style.display="inline-block";
-    if(currentIndex==0) document.getElementById("prevBtn").style.display="none";
+    updateButtons();
   }
 }
 
 function calculate(){
-  // 重置
   for(let key in strengths) strengths[key]=0;
   questions.forEach((q,i)=>{
     let val=answers[i];
@@ -173,10 +165,9 @@ function calculate(){
   resultHTML+="</ol><h3>🔒 其他潜在优势</h3><div class='blur'><ol>";
   top10.slice(5,10).forEach(s=>{resultHTML+=`<li>${s[0]}</li>`;});
   resultHTML+="</ol></div>";
-  resultHTML+=`<h3>🧠 初步分析</h3><p class='fade'>
-根据你的优势组合，前五优势显示你的核心驱动力和能力倾向，后五潜在优势提供补充信息，对职业选择和个人成长有指导意义……
-</p><p><b>详细优势解读 + 职业路径建议<br>欢迎预约一对一深度咨询。</b></p>`;
-
+  resultHTML+=`<h3>🧠 初步分析</h3><p class='blur'>
+你的前五优势显示了核心能力倾向，对职业选择和发展有指导意义。潜在优势提供补充信息，可用于优化个人成长路径。
+</p>`;
   document.getElementById("result").innerHTML=resultHTML;
 }
 </script>
