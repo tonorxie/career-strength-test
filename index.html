@@ -48,10 +48,10 @@ button:hover{background:#4338ca;}
   padding:20px;
   margin-bottom:20px;
   box-shadow:0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.3s;
+  transition: transform 0.3s, opacity 0.3s;
 }
-.card.active{transform: translateX(0);}
-.card.inactive{transform: translateX(120%); opacity:0;}
+.card.active{transform: translateX(0); opacity:1;}
+.card.inactive{transform: translateX(120%); opacity:0; position:absolute; top:0; left:0; width:100%;}
 input[type="text"]{
   width:calc(100% - 20px);
   padding:8px;
@@ -82,7 +82,7 @@ input[type="text"]{
 <h1>职业优势探索测评</h1>
 <p>欢迎参加本次优势探索测试。本测试为初步探索版本，参考优势理论设计。<br>
 部分题目为“符合 / 不符合”两选一，部分题目为四选一。无需过度思考，选择更偏向你的一项即可。<br>
-可在未来不同阶段重复测试，对比变化。</p>
+未来不同阶段可重复测试，对比变化。</p>
 <button onclick="nextStep(2)">开始测试 →</button>
 </div>
 
@@ -108,7 +108,7 @@ input[type="text"]{
 
 <div class="progress-bar"><div class="progress" id="progress"></div></div>
 
-<div id="quiz"></div>
+<div id="quiz" style="position:relative;"></div>
 <button onclick="calculate()">提交测试</button>
 </div>
 
@@ -118,7 +118,7 @@ input[type="text"]{
 </div>
 
 <script>
-// 飞书表单
+// 飞书表单链接
 const FEISHU_FORM_URL="https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc";
 
 // 步骤控制
@@ -136,14 +136,14 @@ function validatePain(){
   nextStep(3);
 }
 
-// 15个优势示例，可扩展到34个
+// 15优势示例，可扩展到34
 let strengths={
 "学习":0,"战略":0,"体谅":0,"成就":0,"分析":0,
 "沟通":0,"责任":0,"行动":0,"适应":0,"统筹":0,
 "专注":0,"信念":0,"交往":0,"理念":0,"审慎":0
 };
 
-// 30题完整版（示例前7题+补全至30题，可继续根据需要修改）
+// 30题示例（完整可继续扩展）
 let questions=[
 {type:2,text:"我经常主动寻找新知识、新课程或新技能来提升自己。",strength:"学习"},
 {type:2,text:"面对复杂问题，我习惯先整体思考路径与方向。",strength:"战略"},
@@ -156,17 +156,16 @@ let questions=[
 {type:4,text:"团队分工混乱时，我更可能：",options:[
 ["主动统筹协调","统筹"],["自己默默承担任务","责任"],["鼓舞士气沟通","沟通"],["专注完成自己部分","专注"]
 ]},
-// ---- 补全剩余23题 ----
-// 这里示例，你可以自己替换或微调文案
+// 下面补全23题
 {type:2,text:"我喜欢在变化中保持灵活与适应。",strength:"适应"},
 {type:2,text:"我注重承诺与责任感，别人信任我。",strength:"责任"},
-{type:2,text:"我喜欢深度思考复杂问题。",strength:"分析"},
+{type:2,text:"我喜欢深度分析复杂问题。",strength:"分析"},
 {type:2,text:"我擅长用语言表达自己的想法。",strength:"沟通"},
-{type:2,text:"我对目标有强烈的执行力。",strength:"行动"},
-{type:2,text:"我擅长整理和安排事务。",strength:"统筹"},
+{type:2,text:"我对目标有强烈执行力。",strength:"行动"},
+{type:2,text:"我善于整理和安排事务。",strength:"统筹"},
 {type:2,text:"我能够高度专注在重要任务上。",strength:"专注"},
 {type:2,text:"我有清晰的价值观，并坚持执行。",strength:"信念"},
-{type:2,text:"我擅长与不同类型的人建立联系。",strength:"交往"},
+{type:2,text:"我善于与不同类型的人建立联系。",strength:"交往"},
 {type:2,text:"我喜欢思考理念和未来可能性。",strength:"理念"},
 {type:2,text:"我在执行前会谨慎评估风险。",strength:"审慎"},
 {type:4,text:"在团队讨论中，我更倾向：",options:[
@@ -191,14 +190,16 @@ let questions=[
 {type:2,text:"我善于思考未来趋势和理念。",strength:"理念"}
 ];
 
+// 渲染题目卡片
 let quizDiv=document.getElementById("quiz");
+let cards=[];
 questions.forEach((q,i)=>{
   let div=document.createElement("div");
   div.className="card inactive";
   let html="<p>"+(i+1)+". "+q.text+"</p>";
   if(q.type==2){
     html+=`<input type="radio" name="q${i}" value="1"> 符合
-    <input type="radio" name="q${i}" value="0"> 不符合`;
+           <input type="radio" name="q${i}" value="0"> 不符合`;
   }else{
     q.options.forEach(opt=>{
       html+=`<div><input type="radio" name="q${i}" value="${opt[1]}"> ${opt[0]}</div>`;
@@ -206,12 +207,12 @@ questions.forEach((q,i)=>{
   }
   div.innerHTML=html;
   quizDiv.appendChild(div);
+  cards.push(div);
 });
 
 // 显示第一张卡片
 let currentIndex=0;
-let cards=document.querySelectorAll(".card");
-if(cards.length>0) cards[0].classList.add("active");
+if(cards.length>0) cards[0].classList.remove("inactive");
 
 // 进度条
 function updateProgress(){
@@ -219,39 +220,38 @@ function updateProgress(){
   document.getElementById("progress").style.width=percent+"%";
 }
 
-// 下一题自动切换
+// 卡片切换
 cards.forEach((card,i)=>{
   let inputs=card.querySelectorAll("input[type=radio]");
   inputs.forEach(input=>{
     input.addEventListener("change",()=>{
-      card.classList.remove("active");
       card.classList.add("inactive");
       currentIndex++;
       if(currentIndex<cards.length){
-        cards[currentIndex].classList.add("active");
+        cards[currentIndex].classList.remove("inactive");
         updateProgress();
       }
     });
   });
 });
 
-// 计算分数 & 提交
+// 提交
 function calculate(){
   let name=document.getElementById("name").value.trim();
   let wechat=document.getElementById("wechat").value.trim();
   if(!name||!wechat){alert("请填写姓名和微信"); return;}
-  // 计分
+
   questions.forEach((q,i)=>{
     let selected=document.querySelector(`input[name="q${i}"]:checked`);
     if(!selected) return;
     if(q.type==2 && selected.value=="1") strengths[q.strength]+=1;
     if(q.type==4) strengths[selected.value]+=1;
   });
+
   let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
   let top5=sorted.slice(0,5);
   let top10=sorted.slice(0,10);
 
-  // 构建结果显示
   let intro={
     "学习":"持续渴望成长，对知识保持高度热情。",
     "战略":"擅长从复杂局面中看清方向。",
@@ -283,12 +283,12 @@ function calculate(){
   document.getElementById("step3").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
 
-  // 自动提交到飞书
+  // 飞书提交
   let painChecked=document.querySelectorAll('input[name="pain"]:checked');
   let painText=Array.from(painChecked).map(c=>c.parentElement.textContent.trim()).join(" | ");
   let top5Text=top5.map(s=>s[0]).join(" | ");
   let top10Text=top10.map(s=>s[0]).join(" | ");
-  let analysisText=resultHTML.replace(/<[^>]+>/g,''); // 去掉HTML标签提交纯文本
+  let analysisText=resultHTML.replace(/<[^>]+>/g,'');
 
   let formData=new FormData();
   formData.append("姓名",name);
