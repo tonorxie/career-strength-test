@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>盖洛普优势探索 · 30题版</title>
+<title>盖洛普优势测评</title>
 <style>
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:linear-gradient(135deg,#eef2ff,#fdf4ff);color:#333;}
 .page{display:none;max-width:900px;margin:40px auto;background:white;padding:40px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.1);animation:fade .5s ease;}
@@ -16,7 +16,6 @@ button:hover{transform:translateY(-2px);}
 .progress{height:10px;width:0%;background:linear-gradient(90deg,#6366f1,#ec4899);transition:.4s;}
 .blur{filter:blur(6px);user-select:none;}
 .nav{display:flex;justify-content:space-between;margin-top:20px;}
-input[type=text]{padding:8px;font-size:14px;width:100%;margin-top:5px;border-radius:6px;border:1px solid #ccc;}
 @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 @media (max-width:600px){.page{margin:20px;padding:20px;border-radius:15px;}h1,h2{font-size:20px;}button{padding:12px 20px;font-size:14px;}.option{padding:12px;font-size:14px;}.progress-wrap{height:8px;}}
 </style>
@@ -39,12 +38,6 @@ input[type=text]{padding:8px;font-size:14px;width:100%;margin-top:5px;border-rad
 <!-- STEP2 -->
 <div class="page" id="page2">
 <h2>你目前的面临的困境/最想解决的问题是什么？（最多选3项）</h2>
-<div>
-<label>姓名：<input type="text" id="userName"></label>
-</div>
-<div>
-<label>微信：<input type="text" id="userWeChat"></label>
-</div>
 <div id="problemBox" style="margin-top:20px;"></div>
 <div style="text-align:center;margin-top:30px;">
 <button id="backToStep1">返回</button>
@@ -97,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function() {
   const problems=["😫 职场倦怠，意义感缺失","😶‍🌫️ 想改变却不敢行动","🌍 留学信息混乱怕选错","🤯 不清楚留学与职业衔接","👩‍🏫 想转国际教育赛道","😵‍💫 焦虑内耗反复纠结"];
   let selectedProblems=[];
 
-  // 生成困境选项
   let problemBox=document.getElementById("problemBox");
   problems.forEach(p=>{
     let div=document.createElement("div");
@@ -112,59 +104,53 @@ document.addEventListener("DOMContentLoaded", function() {
     problemBox.appendChild(div);
   });
 
-  // ======== 30题 ========
+  // ======== 题目 ========
   const questions=[
+/* 四选题 */
+{type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"],map:"行动 Activator"},
+{type:"four",text:"当你做职业决策时，更倾向于：",options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
+{type:"four",text:"团队出现冲突时，你更可能：",options:["主动调解","保持观察","避免参与","据理力争"],map:"体谅 Empathy"},
+{type:"four",text:"在学习新知识时，你更像：",options:["持续深挖","系统总结","快速应用","只学必要部分"],map:"学习 Learner"},
+{type:"four",text:"当任务压力大时，你通常：",options:["越战越勇","冷静分析","寻找支持","容易焦虑"],map:"成就 Achiever"},
+{type:"four",text:"在公开表达时，你：",options:["自然流畅","略有紧张但能表达","不太愿意表达","尽量避免发言"],map:"沟通 Communication"},
+{type:"four",text:"遇到变化时，你：",options:["迅速调整","谨慎观察","担忧风险","等待稳定"],map:"适应 Adaptability"},
+{type:"four",text:"当别人情绪低落时，你：",options:["主动安慰","理性建议","保持距离","不知所措"],map:"体谅 Empathy"},
+{type:"four",text:"面对竞争时，你：",options:["兴奋投入","平常心","回避竞争","焦虑不安"],map:"竞争 Competition"},
+{type:"four",text:"做长期规划时，你：",options:["清晰拆解目标","模糊设想","随机应变","不做规划"],map:"战略 Strategic"},
+{type:"four",text:"处理复杂问题时，你：",options:["逻辑拆解","寻求他人意见","凭直觉判断","回避难题"],map:"分析 Analytical"},
+{type:"four",text:"面对多任务时，你：",options:["统筹安排","逐个处理","随性推进","容易混乱"],map:"统筹 Arranger"},
+{type:"four",text:"当承担责任时，你：",options:["主动承担","视情况而定","尽量避免","推给他人"],map:"责任 Responsibility"},
+{type:"four",text:"面对未知机会时，你：",options:["主动尝试","谨慎观察","担忧失败","拒绝变化"],map:"自信 Self-Assurance"},
+{type:"four",text:"工作状态最好时，你：",options:["高度专注","与人互动","自由探索","轻松执行"],map:"专注 Focus"},
+{type:"four",text:"社交场合中，你：",options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:"交往 Woo"},
+/* 双选题 */
 {type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
 {type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
-{type:"binary",text:"我能够感知他人情绪并给予支持。",map:"体谅 Empathy"},
-{type:"binary",text:"面对不确定情况，我能保持灵活调整。",map:"适应 Adaptability"},
-{type:"binary",text:"我重视承诺，别人可以依赖我完成任务。",map:"责任 Responsibility"},
-{type:"binary",text:"我习惯把想法迅速付诸行动。",map:"行动 Activator"},
-{type:"binary",text:"我喜欢和团队成员分享正能量。",map:"积极 Positivity"},
-{type:"binary",text:"我擅长用逻辑和数据分析问题。",map:"分析 Analytical"},
-{type:"binary",text:"我能够长期专注于目标并持续推进。",map:"专注 Focus"},
-{type:"binary",text:"我在社交场合能快速建立联系。",map:"交往 Woo"},
-{type:"binary",text:"我擅长表达自己的观点，影响他人。",map:"沟通 Communication"},
-{type:"binary",text:"我喜欢学习新知识并持续成长。",map:"学习 Learner"},
-{type:"binary",text:"我喜欢整合资源，让事情高效运转。",map:"统筹 Arranger"},
-{type:"binary",text:"我有信心面对重大决策与挑战。",map:"自信 Self-Assurance"},
-
-// 四选题（16题）
-{type:"four",text:"当面对新项目时，你通常会：",options:["立刻行动","先做规划","咨询他人","拖延"],map:"行动 Activator"},
-{type:"four",text:"在解决问题时，你倾向于：",options:["数据分析","头脑风暴","直觉判断","寻求他人建议"],map:"分析 Analytical"},
-{type:"four",text:"你在团队中更擅长：",options:["激励他人","协调资源","提出创意","保持专注"],map:"统筹 Arranger"},
-{type:"four",text:"面对复杂信息，你通常：",options:["快速做决策","深入思考","寻求更多资料","请教他人"],map:"思维 Intellection"},
-{type:"four",text:"你在达成目标时最注重：",options:["速度和效率","过程规划","团队协作","学习成长"],map:"成就 Achiever"},
-{type:"four",text:"在处理人际冲突时，你会：",options:["主动调解","倾听感受","提出方案","保持中立"],map:"体谅 Empathy"},
-{type:"four",text:"你喜欢的工作节奏是：",options:["快速变化","有条不紊","自由灵活","按计划推进"],map:"适应 Adaptability"},
-{type:"four",text:"你表达意见时更倾向：",options:["直接清晰","温和婉转","用数据说话","幽默引导"],map:"沟通 Communication"},
-{type:"four",text:"你在压力下的表现：",options:["立即行动","分析情况","寻求帮助","保持冷静"],map:"行动 Activator"},
-{type:"four",text:"你在学习新知识时通常：",options:["阅读书籍","参加课程","向他人请教","通过实践学习"],map:"学习 Learner"},
-{type:"four",text:"在团队中你最擅长：",options:["鼓舞士气","建立关系","解决问题","规划安排"],map:"积极 Positivity"},
-{type:"four",text:"你做决策时主要依据：",options:["数据和逻辑","直觉和经验","他人建议","目标导向"],map:"战略 Strategic"},
-{type:"four",text:"你喜欢的工作风格：",options:["自由发挥","目标明确","结构化流程","团队协作"],map:"专注 Focus"},
-{type:"four",text:"你更在意自己的成就还是过程？",options:["成就结果","享受过程","两者平衡","随遇而安"],map:"成就 Achiever"},
-{type:"four",text:"在社交场合，你通常：",options:["主动结识新朋友","维持熟人关系","观察他人","倾听他人"],map:"交往 Woo"},
-{type:"four",text:"你处理任务时倾向：",options:["快速完成","计划周全","与他人协作","不断优化"],map:"统筹 Arranger"}
+{type:"binary",text:"我天生乐观。",map:"积极 Positivity"},
+{type:"binary",text:"我对目标高度专注。",map:"专注 Focus"},
+{type:"binary",text:"我习惯分析数据再决策。",map:"分析 Analytical"},
+{type:"binary",text:"我表达有感染力。",map:"沟通 Communication"},
+{type:"binary",text:"我行动力强。",map:"行动 Activator"},
+{type:"binary",text:"我适应变化能力强。",map:"适应 Adaptability"},
+{type:"binary",text:"我喜欢持续学习。",map:"学习 Learner"},
+{type:"binary",text:"我愿意承担责任。",map:"责任 Responsibility"},
+{type:"binary",text:"我擅长资源整合。",map:"统筹 Arranger"},
+{type:"binary",text:"我喜欢赢过别人。",map:"竞争 Competition"},
+{type:"binary",text:"我对自己判断有信心。",map:"自信 Self-Assurance"},
+{type:"binary",text:"我善于理解他人感受。",map:"体谅 Empathy"}
   ];
 
   let current=0,answers={},top5=[],top10=[],fullAnalysisText="";
 
-  // ======== 页面跳转函数 ========
   function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById("page"+id).classList.add("active");}
 
-  // STEP1/STEP2按钮绑定
   document.getElementById("startBtn").addEventListener("click", ()=>go(2));
   document.getElementById("backToStep1").addEventListener("click", ()=>go(1));
   document.getElementById("goToTest").addEventListener("click", ()=>{
-    const name=document.getElementById("userName").value.trim();
-    const wechat=document.getElementById("userWeChat").value.trim();
-    if(!name||!wechat){ alert("请输入姓名和微信"); return; }
     if(selectedProblems.length===0){ alert("请选择至少一项困境"); return; }
     go(3); renderQuestion();
   });
 
-  // ======== 测试题逻辑 ========
   function renderQuestion(){
     let q=questions[current];
     let html=`<p><b>${current+1}/${questions.length}</b> ${q.text}</p>`;
@@ -189,11 +175,10 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   window.prev=function(){if(current>0){current--;renderQuestion();}}
 
-  // ======== 结果计算 ========
   function calculate(){
     for(let k in strengths){strengths[k]=0;}
     questions.forEach((q,i)=>{
-      if(!(q.map in strengths)) return; // 避免空白页
+      if(!(q.map in strengths)) return;
       if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
       if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
     });
@@ -209,28 +194,6 @@ document.addEventListener("DOMContentLoaded", function() {
     html+=`<h3>🧠 初步分析</h3><p>根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略，也有执行力与理解他人的能力，适合在有挑战又允许自主发挥的环境中发展。</p>
     <p class="blur">其他潜在优势在不同场景可能发挥作用，帮助优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。</p>`;
     document.getElementById("result").innerHTML=html;
-    submitToFeishu();
-  }
-
-  async function submitToFeishu(){
-    const name=document.getElementById("userName").value.trim();
-    const wechat=document.getElementById("userWeChat").value.trim();
-    const payload={
-      "姓名":name,
-      "微信":wechat,
-      "困境":selectedProblems,
-      "前五优势":top5.map(x=>x[0]),
-      "前十优势":top10.map(x=>x[0]),
-      "完整分析":fullAnalysisText
-    };
-    try{
-      await fetch("https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(payload)
-      });
-      console.log("提交成功");
-    }catch(e){console.error("提交失败",e);}
   }
 
 });
