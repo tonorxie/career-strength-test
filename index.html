@@ -2,8 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>盖洛普优势探索 · 30题专业版</title>
-
+<title>盖洛普优势探索 · 30题修正版</title>
 <style>
 body{
 margin:0;
@@ -11,7 +10,6 @@ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 background:linear-gradient(135deg,#eef2ff,#fdf4ff);
 color:#333;
 }
-
 .page{
 display:none;
 max-width:900px;
@@ -22,11 +20,8 @@ border-radius:20px;
 box-shadow:0 20px 60px rgba(0,0,0,0.1);
 animation:fade .5s ease;
 }
-
 .active{display:block;}
-
 h1,h2{text-align:center;color:#4f46e5;}
-
 button{
 background:linear-gradient(90deg,#6366f1,#a855f7);
 color:white;
@@ -38,7 +33,6 @@ font-size:16px;
 transition:.3s;
 }
 button:hover{transform:translateY(-2px);}
-
 .option{
 background:#f9fafb;
 padding:14px;
@@ -48,7 +42,6 @@ cursor:pointer;
 transition:.3s;
 }
 .option:hover{background:#eef2ff;}
-
 .progress-wrap{
 height:10px;
 background:#eee;
@@ -62,18 +55,15 @@ width:0%;
 background:linear-gradient(90deg,#6366f1,#ec4899);
 transition:.4s;
 }
-
 .blur{
 filter:blur(6px);
 user-select:none;
 }
-
 .nav{
 display:flex;
 justify-content:space-between;
 margin-top:20px;
 }
-
 @keyframes fade{
 from{opacity:0;transform:translateY(10px);}
 to{opacity:1;transform:translateY(0);}
@@ -97,8 +87,7 @@ to{opacity:1;transform:translateY(0);}
 
 <!-- STEP2 -->
 <div class="page" id="page2">
-<h2>第二步：了解你的现状</h2>
-<p>你目前最想解决的问题是？（最多选3项）</p>
+<h2>你目前的面临的困境/最想解决的问题是什么？（最多选3项）</h2>
 <div id="problemBox"></div>
 <div style="text-align:center;margin-top:30px;">
 <button onclick="go(1)">返回</button>
@@ -126,7 +115,6 @@ to{opacity:1;transform:translateY(0);}
 </div>
 
 <script>
-
 /* 优势定义 + 解释 */
 const strengthIntro={
 "学习 Learner":"你对知识充满渴望，持续成长是你的核心驱动力。",
@@ -146,63 +134,52 @@ const strengthIntro={
 "竞争 Competition":"你渴望胜出，通过比较激发动力。",
 "交往 Woo":"你擅长与陌生人建立联系，社交自然流畅。"
 };
-
 let strengths={};
 for(let k in strengthIntro){strengths[k]=0;}
 
+/* 困境选项 */
+const problems=[
+"😫 职场倦怠，意义感缺失",
+"😶‍🌫️ 想改变却不敢行动",
+"🌍 留学信息混乱怕选错",
+"🤯 不清楚留学与职业衔接",
+"👩‍🏫 想转国际教育赛道",
+"😵‍💫 焦虑内耗反复纠结"
+];
+let selectedProblems=[];
+let problemBox=document.getElementById("problemBox");
+problems.forEach(p=>{
+let div=document.createElement("div");
+div.className="option";
+div.innerHTML=`<input type="checkbox"> ${p}`;
+div.onclick=function(){
+let box=div.querySelector("input");
+if(!box.checked && selectedProblems.length>=3){alert("最多选择3项");return;}
+box.checked=!box.checked;
+if(box.checked){selectedProblems.push(p);}else{selectedProblems=selectedProblems.filter(x=>x!=p);}
+};
+problemBox.appendChild(div);
+});
+
 /* 题库（16四选 + 14双选） */
 const questions=[
+{type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"] ,map:"行动 Activator"},
+{type:"four",text:"当你做职业决策时，更倾向于：",options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
+{type:"four",text:"团队出现冲突时，你更可能：",options:["主动调解","保持观察","避免参与","据理力争"],map:"体谅 Empathy"},
+{type:"four",text:"在学习新知识时，你更像：",options:["持续深挖","系统总结","快速应用","只学必要部分"],map:"学习 Learner"},
+{type:"four",text:"当任务压力大时，你通常：",options:["越战越勇","冷静分析","寻找支持","容易焦虑"],map:"成就 Achiever"},
+{type:"four",text:"在公开表达时，你：",options:["自然流畅","略有紧张但能表达","不太愿意表达","尽量避免发言"],map:"沟通 Communication"},
+{type:"four",text:"遇到变化时，你：",options:["迅速调整","谨慎观察","担忧风险","等待稳定"],map:"适应 Adaptability"},
+{type:"four",text:"当别人情绪低落时，你：",options:["主动安慰","理性建议","保持距离","不知所措"],map:"体谅 Empathy"},
+{type:"four",text:"面对竞争时，你：",options:["兴奋投入","平常心","回避竞争","焦虑不安"],map:"竞争 Competition"},
+{type:"four",text:"做长期规划时，你：",options:["清晰拆解目标","模糊设想","随机应变","不做规划"],map:"战略 Strategic"},
+{type:"four",text:"处理复杂问题时，你：",options:["逻辑拆解","寻求他人意见","凭直觉判断","回避难题"],map:"分析 Analytical"},
+{type:"four",text:"面对多任务时，你：",options:["统筹安排","逐个处理","随性推进","容易混乱"],map:"统筹 Arranger"},
+{type:"four",text:"当承担责任时，你：",options:["主动承担","视情况而定","尽量避免","推给他人"],map:"责任 Responsibility"},
+{type:"four",text:"面对未知机会时，你：",options:["主动尝试","谨慎观察","担忧失败","拒绝变化"],map:"自信 Self-Assurance"},
+{type:"four",text:"工作状态最好时，你：",options:["高度专注","与人互动","自由探索","轻松执行"],map:"专注 Focus"},
+{type:"four",text:"社交场合中，你：",options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:"交往 Woo"},
 
-/* 四选题 */
-{type:"four",text:"当面对新项目时，你通常会：",
-options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"] ,map:"行动 Activator"},
-
-{type:"four",text:"当你做职业决策时，更倾向于：",
-options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
-
-{type:"four",text:"团队出现冲突时，你更可能：",
-options:["主动调解","保持观察","避免参与","据理力争"],map:"体谅 Empathy"},
-
-{type:"four",text:"在学习新知识时，你更像：",
-options:["持续深挖","系统总结","快速应用","只学必要部分"],map:"学习 Learner"},
-
-{type:"four",text:"当任务压力大时，你通常：",
-options:["越战越勇","冷静分析","寻找支持","容易焦虑"],map:"成就 Achiever"},
-
-{type:"four",text:"在公开表达时，你：",
-options:["自然流畅","略有紧张但能表达","不太愿意表达","尽量避免发言"],map:"沟通 Communication"},
-
-{type:"four",text:"遇到变化时，你：",
-options:["迅速调整","谨慎观察","担忧风险","等待稳定"],map:"适应 Adaptability"},
-
-{type:"four",text:"当别人情绪低落时，你：",
-options:["主动安慰","理性建议","保持距离","不知所措"],map:"体谅 Empathy"},
-
-{type:"four",text:"面对竞争时，你：",
-options:["兴奋投入","平常心","回避竞争","焦虑不安"],map:"竞争 Competition"},
-
-{type:"four",text:"做长期规划时，你：",
-options:["清晰拆解目标","模糊设想","随机应变","不做规划"],map:"战略 Strategic"},
-
-{type:"four",text:"处理复杂问题时，你：",
-options:["逻辑拆解","寻求他人意见","凭直觉判断","回避难题"],map:"分析 Analytical"},
-
-{type:"four",text:"面对多任务时，你：",
-options:["统筹安排","逐个处理","随性推进","容易混乱"],map:"统筹 Arranger"},
-
-{type:"four",text:"当承担责任时，你：",
-options:["主动承担","视情况而定","尽量避免","推给他人"],map:"责任 Responsibility"},
-
-{type:"four",text:"面对未知机会时，你：",
-options:["主动尝试","谨慎观察","担忧失败","拒绝变化"],map:"自信 Self-Assurance"},
-
-{type:"four",text:"工作状态最好时，你：",
-options:["高度专注","与人互动","自由探索","轻松执行"],map:"专注 Focus"},
-
-{type:"four",text:"社交场合中，你：",
-options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:"交往 Woo"},
-
-/* 双选题 */
 {type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
 {type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
 {type:"binary",text:"我天生乐观。",map:"积极 Positivity"},
@@ -217,7 +194,6 @@ options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:
 {type:"binary",text:"我喜欢赢过别人。",map:"竞争 Competition"},
 {type:"binary",text:"我对自己判断有信心。",map:"自信 Self-Assurance"},
 {type:"binary",text:"我善于理解他人感受。",map:"体谅 Empathy"}
-
 ];
 
 let current=0;
@@ -228,8 +204,7 @@ let q=questions[current];
 let html=`<p><b>${current+1}/30</b> ${q.text}</p>`;
 
 if(q.type==="binary"){
-html+=`
-<div class="option"><input type="radio" name="q" value="1"> 符合</div>
+html+=`<div class="option"><input type="radio" name="q" value="1"> 符合</div>
 <div class="option"><input type="radio" name="q" value="0"> 不符合</div>`;
 }else{
 q.options.forEach((opt,i)=>{
@@ -261,16 +236,11 @@ let checked=document.querySelector("input[name=q]:checked");
 if(!checked){alert("请选择一个选项");return;}
 answers[current]=checked.value;
 
-if(current<questions.length-1){
-current++;renderQuestion();
-}else{
-calculate();
-}
+if(current<questions.length-1){current++;renderQuestion();}
+else{calculate();}
 }
 
-function prev(){
-if(current>0){current--;renderQuestion();}
-}
+function prev(){if(current>0){current--;renderQuestion();}}
 
 function calculate(){
 for(let k in strengths){strengths[k]=0;}
@@ -286,50 +256,36 @@ let top10=sorted.slice(0,10);
 go("resultPage");
 
 let html="<h3>✨ 前5大优势</h3><ol>";
-top5.forEach(s=>{
-html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`;
-});
+top5.forEach(s=>html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`);
 html+="</ol>";
 
 html+="<h3>🔒 潜在优势</h3><div class='blur'><ol>";
 top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);
 html+="</ol></div>";
 
-let names=top10.map(x=>x[0].split(" ")[0]).join("、");
+let top5names=top5.map(x=>x[0].split(" ")[0]).join("、");
 
-html+=`
-<h3>🧠 初步分析</h3>
+html+=`<h3>🧠 初步分析</h3>
 <p>
-从你的优势结构来看（${names}），
-你在决策中既重视成果，也强调思考与规划，
-这意味着你适合在有清晰目标但允许自主空间的环境中发展。
+根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略思维，也有行动力与执行力，且善于理解他人，适合在有挑战又允许自主发挥的环境中发展。
 </p>
 <p class="blur">
-当你的学习力与战略思维结合时，
-你会不断优化路径而不是盲目行动；
-如果再叠加沟通或体谅优势，
-你在人际协作中也会更具影响力。
-建议未来职业选择围绕核心优势设计，
-避免长期处于与天赋相悖的环境。
-详细优势深度解读与职业路径规划，
-欢迎预约一对一咨询。
-</p>
-`;
+其他潜在优势也可能在不同场景发挥作用，帮助你优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。
+</p>`;
 
 document.getElementById("result").innerHTML=html;
 }
 
 function go(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-if(typeof id==="number"){
-document.getElementById("page"+id).classList.add("active");
-}else{
-document.getElementById(id).classList.add("active");
-}
+if(typeof id==="number") document.getElementById("page"+id).classList.add("active");
+else document.getElementById(id).classList.add("active");
 }
 
-function goTest(){go(3);renderQuestion();}
-
+function goTest(){
+if(selectedProblems.length===0){alert("请选择至少一项困境");return;}
+go(3);renderQuestion();
+}
 </script>
 </body>
 </html>
