@@ -2,7 +2,8 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>盖洛普优势探索 · 30题修正版</title>
+<title>盖洛普优势探索 · 自适应30题版</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
   margin:0;
@@ -64,34 +65,33 @@ button:hover{transform:translateY(-2px);}
   justify-content:space-between;
   margin-top:20px;
 }
+.nav button{width:48%;}
 @keyframes fade{
   from{opacity:0;transform:translateY(10px);}
   to{opacity:1;transform:translateY(0);}
 }
-/* 手机竖屏适配 */
-@media (max-width:600px){
-  body{padding:0;}
+
+/* 手机端优化 */
+@media(max-width:600px){
   .page{
     margin:10px;
-    padding:20px;
+    padding:25px;
     border-radius:15px;
   }
-  h1{font-size:22px;}
-  h2{font-size:18px;}
   button{
-    padding:14px 20px;
-    font-size:16px;
+    font-size:18px;
+    padding:16px 20px;
     width:100%;
-    box-sizing:border-box;
     margin-bottom:10px;
   }
   .option{
-    padding:16px;
     font-size:16px;
+    padding:18px;
   }
-  .nav{flex-direction:column;}
+  .nav{
+    flex-direction:column;
+  }
   .nav button{width:100%; margin:5px 0;}
-  .progress-wrap{height:12px;}
 }
 </style>
 </head>
@@ -105,7 +105,7 @@ button:hover{transform:translateY(-2px);}
 无需过度思考，请选择更偏向你的选项即可。<br>
 本测评为参考盖洛普优势理论设计的初步探索版本。
 </p>
-<div style="text-align:center;margin-top:30px;">
+<div style="text-align:center;margin-top:20px;">
 <button onclick="go(2)">开始测试</button>
 </div>
 </div>
@@ -114,7 +114,7 @@ button:hover{transform:translateY(-2px);}
 <div class="page" id="page2">
 <h2>你目前的面临的困境/最想解决的问题是什么？（最多选3项）</h2>
 <div id="problemBox"></div>
-<div style="text-align:center;margin-top:30px;">
+<div style="text-align:center;margin-top:20px;">
 <button onclick="go(1)">返回</button>
 <button onclick="goTest()">进入正式测试</button>
 </div>
@@ -140,6 +140,7 @@ button:hover{transform:translateY(-2px);}
 </div>
 
 <script>
+// 优势定义 + 解释
 const strengthIntro={
 "学习 Learner":"你对知识充满渴望，持续成长是你的核心驱动力。",
 "思维 Intellection":"你喜欢深度思考，习惯独立分析问题本质。",
@@ -161,6 +162,7 @@ const strengthIntro={
 let strengths={};
 for(let k in strengthIntro){strengths[k]=0;}
 
+// 困境选项
 const problems=[
 "😫 职场倦怠，意义感缺失",
 "😶‍🌫️ 想改变却不敢行动",
@@ -184,6 +186,7 @@ problems.forEach(p=>{
   problemBox.appendChild(div);
 });
 
+// 题库 30 题
 const questions=[
 {type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"] ,map:"行动 Activator"},
 {type:"four",text:"当你做职业决策时，更倾向于：",options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
@@ -201,7 +204,6 @@ const questions=[
 {type:"four",text:"面对未知机会时，你：",options:["主动尝试","谨慎观察","担忧失败","拒绝变化"],map:"自信 Self-Assurance"},
 {type:"four",text:"工作状态最好时，你：",options:["高度专注","与人互动","自由探索","轻松执行"],map:"专注 Focus"},
 {type:"four",text:"社交场合中，你：",options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:"交往 Woo"},
-
 {type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
 {type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
 {type:"binary",text:"我天生乐观。",map:"积极 Positivity"},
@@ -239,10 +241,6 @@ function renderQuestion(){
     });
   }
   document.getElementById("nextBtn").innerText=(current===questions.length-1)?"查看结果":"下一题";
-  updateProgress();
-}
-
-function updateProgress(){
   document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";
 }
 
