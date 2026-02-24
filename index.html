@@ -264,27 +264,27 @@ document.getElementById("step3").classList.add("hidden");
 document.getElementById("result").classList.remove("hidden");
 
 // 自动提交到飞书
-let painChecked=document.querySelectorAll('input[name="pain"]:checked');
-let painText=Array.from(painChecked).map(c=>c.parentElement.textContent.trim()).join(" | ");
-let top5Text=top5.map(s=>s[0]).join(" | ");
-let next5Text=next5.map(s=>s[0]).join(" | ");
-let fullScoreText=JSON.stringify(strengths);
+let painChecked = document.querySelectorAll('input[name="pain"]:checked');
+let painText = Array.from(painChecked).map(c=>c.parentElement.textContent.trim()).join(" | ");
+let top5Text = top5.map(s=>s[0]).join(" | ");
+let top10Text = sorted.slice(0,10).map(s=>s[0]).join(" | ");
+let analysisText = document.getElementById("result").innerText; // 或者你想保存的完整分析文字
 
-let formData=new FormData();
-formData.append("姓名",name);
-formData.append("微信",wechat);
-formData.append("困境",painText);
-formData.append("前五优势",top5Text);
-formData.append("后五优势",next5Text);
-formData.append("完整得分",fullScoreText);
+let formData = new FormData();
+formData.append("姓名", name);
+formData.append("微信", wechat);
+formData.append("困境", painText);
+formData.append("前五优势", top5Text);
+formData.append("前十优势", top10Text);
+formData.append("完整的分析文字", analysisText);
 
-// 直接提交
-fetch(FEISHU_FORM_URL,{
-method:"POST",
-body:formData,
-mode:"no-cors"
+// 提交
+fetch(FEISHU_FORM_URL, {
+    method: "POST",
+    body: formData,
+    mode: "no-cors"
 }).then(()=>{
-console.log("已提交飞书表单");
+    console.log("已提交飞书表单");
 });
 
 }
