@@ -4,175 +4,116 @@
 <meta charset="UTF-8">
 <title>职业优势探索测评</title>
 <style>
-body{
-  font-family:"Helvetica Neue",Arial;
-  background: linear-gradient(135deg,#eef2ff,#f8fafc);
-  margin:0; padding:0; color:#333;
-}
-.container{
-  max-width:800px;
-  margin:40px auto;
-  background:white;
-  padding:40px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  overflow:hidden;
-}
+body{font-family:"Helvetica Neue",Arial;background:linear-gradient(135deg,#eef2ff,#f8fafc);margin:0;padding:0;color:#333;}
+.container{max-width:800px;margin:40px auto;background:white;padding:40px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;}
 h1,h2{text-align:center;}
-button{
-  background:#4f46e5;
-  color:white;
-  border:none;
-  padding:12px 20px;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:20px;
-  font-size:16px;
-  transition:0.3s;
-}
+button{background:#4f46e5;color:white;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;margin-top:20px;font-size:16px;transition:0.3s;}
 button:hover{background:#4338ca;}
 .option{margin:8px 0;padding:8px;}
-.hidden{display:none;}
+.card{background:#f9fafb;border-radius:10px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);display:none;}
+.card.active{display:block;}
+.progress-bar{height:8px;background:#e0e0e0;border-radius:4px;margin-bottom:20px;overflow:hidden;}
+.progress{height:8px;background:#4f46e5;width:0%;transition:0.3s;}
 .blur{filter: blur(6px);}
-.fade{
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}
-.card{
-  background:#f9fafb;
-  border-radius:10px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.3s, opacity 0.3s;
-  display:none; /* 默认隐藏 */
-}
-.card.active{display:block; transform:translateX(0); opacity:1;}
-input[type="text"]{
-  width:calc(100% - 20px);
-  padding:8px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  margin-bottom:15px;
-}
-.progress-bar{
-  height:8px;
-  background:#e0e0e0;
-  border-radius:4px;
-  margin-bottom:20px;
-  overflow:hidden;
-}
-.progress{
-  height:8px;
-  background:#4f46e5;
-  width:0%;
-  transition:0.3s;
-}
+.fade{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 </style>
 </head>
 <body>
 <div class="container">
-
-<!-- STEP1 -->
-<div id="step1">
 <h1>职业优势探索测评</h1>
-<p>欢迎参加本次优势探索测试。本测试为初步探索版本，参考优势理论设计。<br>
-部分题目为“符合 / 不符合”两选一，部分题目为四选一。无需过度思考，选择更偏向你的一项即可。<br>
-未来不同阶段可重复测试，对比变化。</p>
-<button onclick="nextStep(2)">开始测试 →</button>
-</div>
-
-<!-- STEP2 -->
-<div id="step2" class="hidden">
-<h2>第二步：了解你的现状</h2>
-<p>你目前最想解决的问题是什么？（最多选择3项）</p>
-<div class="option"><input type="checkbox" name="pain"> 😩 每天上班像上坟，严重倦怠，意义感匮乏</div>
-<div class="option"><input type="checkbox" name="pain"> 🔄 职场瓶颈期，想改变却不敢裸辞</div>
-<div class="option"><input type="checkbox" name="pain"> 🌍 留学想法很多，但对政策/择校/专业不了解</div>
-<div class="option"><input type="checkbox" name="pain"> 🎓 不清楚留学与职业如何衔接</div>
-<div class="option"><input type="checkbox" name="pain"> 👩‍🏫 教师赛道受限，想转型国际教育/海外路径</div>
-<div class="option"><input type="checkbox" name="pain"> 🧠 焦虑内耗严重，反复纠结迟迟无法行动</div>
-<button onclick="validatePain()">进入正式测试 →</button>
-</div>
-
-<!-- STEP3 -->
-<div id="step3" class="hidden">
-<h2>第三步：正式测试</h2>
-<p>请填写姓名和微信，以便保存测试结果：</p>
-<input type="text" id="name" placeholder="姓名">
-<input type="text" id="wechat" placeholder="微信">
+<p>本测试为初步探索版本，参考盖洛普34项优势理论设计。部分题目为“符合 / 不符合”，部分题目为四选一。无需过度思考，选择更偏向你的一项即可。</p>
 
 <div class="progress-bar"><div class="progress" id="progress"></div></div>
-
 <div id="quiz"></div>
-<button onclick="calculate()">提交测试</button>
-</div>
-
-<!-- RESULT -->
-<div id="result" class="hidden"></div>
-
+<button id="submitBtn" onclick="calculate()">提交测试</button>
+<div id="result"></div>
 </div>
 
 <script>
-const FEISHU_FORM_URL="https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc";
+// 34 个盖洛普优势
+let strengths={
+  "Achiever":0,"Activator":0,"Adaptability":0,"Analytical":0,"Arranger":0,
+  "Belief":0,"Command":0,"Communication":0,"Competition":0,"Connectedness":0,
+  "Consistency":0,"Context":0,"Deliberative":0,"Developer":0,"Discipline":0,
+  "Empathy":0,"Focus":0,"Futuristic":0,"Harmony":0,"Ideation":0,
+  "Includer":0,"Individualization":0,"Input":0,"Intellection":0,"Learner":0,
+  "Maximizer":0,"Positivity":0,"Relator":0,"Responsibility":0,"Restorative":0,
+  "Self-Assurance":0,"Significance":0,"Strategic":0,"Woo":0
+};
 
-function nextStep(step){
-  document.getElementById("step1").classList.add("hidden");
-  document.getElementById("step2").classList.add("hidden");
-  document.getElementById("step3").classList.add("hidden");
-  document.getElementById("step"+step).classList.remove("hidden");
-}
+// 中文解释
+let intro={
+  "Achiever":"持续追求目标和成果，喜欢完成任务带来的成就感。",
+  "Activator":"善于快速行动，把想法付诸实践，带动他人行动。",
+  "Adaptability":"灵活应变，能在变化和不确定环境中保持稳定。",
+  "Analytical":"理性思考，喜欢分析数据和逻辑问题。",
+  "Arranger":"善于组织资源和人力，使工作高效有序。",
+  "Belief":"有坚定价值观和信念，行动受价值观指引。",
+  "Command":"有领导力，能在关键时刻做决定并带领团队。",
+  "Communication":"表达清晰，善于向他人传递信息和影响力。",
+  "Competition":"喜欢挑战和比较，追求更好的表现和成果。",
+  "Connectedness":"感受到人与人、事物间的联系和意义。",
+  "Consistency":"重视公平和规则，维持秩序和一致性。",
+  "Context":"喜欢理解过去背景，以指导未来行动。",
+  "Deliberative":"谨慎小心，擅长评估风险和潜在问题。",
+  "Developer":"善于发现他人潜力，喜欢帮助他人成长。",
+  "Discipline":"有条理，擅长计划和结构化工作。",
+  "Empathy":"能够理解他人情绪，并给予共情支持。",
+  "Focus":"专注目标，能够抵抗干扰完成任务。",
+  "Futuristic":"喜欢展望未来，想象可能性和机会。",
+  "Harmony":"追求和谐，避免冲突，善于协调关系。",
+  "Ideation":"思维活跃，喜欢创造新点子和概念。",
+  "Includer":"乐于接纳他人，善于把人纳入团队。",
+  "Individualization":"善于发现每个人的独特性并因人施策。",
+  "Input":"喜欢收集信息、知识和资源。",
+  "Intellection":"喜欢思考和反思，善于深度分析问题。",
+  "Learner":"持续学习，对新知识和技能充满热情。",
+  "Maximizer":"追求卓越，喜欢把优势发挥到极致。",
+  "Positivity":"积极乐观，能够鼓舞团队士气。",
+  "Relator":"重视深度关系，擅长建立信任和友谊。",
+  "Responsibility":"可靠、有担当，会认真履行承诺。",
+  "Restorative":"喜欢解决问题，善于修复漏洞和挑战。",
+  "Self-Assurance":"自信果断，相信自己的判断和能力。",
+  "Significance":"追求有影响力的成果，希望被认可。",
+  "Strategic":"善于制定策略，快速找到可行路径。",
+  "Woo":"善于建立联系，喜欢与陌生人互动和影响他人。"
+};
 
-function validatePain(){
-  let checked=document.querySelectorAll('input[name="pain"]:checked');
-  if(checked.length>3){alert("最多选择3项"); return;}
-  nextStep(3);
-}
-
-let strengths={"学习":0,"战略":0,"体谅":0,"成就":0,"分析":0,
-"沟通":0,"责任":0,"行动":0,"适应":0,"统筹":0,
-"专注":0,"信念":0,"交往":0,"理念":0,"审慎":0};
-
-// 30题
+// 30题示例，全部对应英文优势
 let questions=[
-{type:2,text:"我经常主动寻找新知识、新课程或新技能来提升自己。",strength:"学习"},
-{type:2,text:"面对复杂问题，我习惯先整体思考路径与方向。",strength:"战略"},
-{type:2,text:"我很容易觉察到他人的情绪变化。",strength:"体谅"},
-{type:2,text:"完成目标本身会带给我强烈满足感。",strength:"成就"},
-{type:2,text:"做决策前我会反复权衡风险。",strength:"审慎"},
-{type:4,text:"当面对新机会时，我通常：",options:[["立刻行动尝试","行动"],["深入分析利弊","分析"],["先考虑长期方向","战略"],["询问他人感受","体谅"]]},
-{type:4,text:"团队分工混乱时，我更可能：",options:[["主动统筹协调","统筹"],["自己默默承担任务","责任"],["鼓舞士气沟通","沟通"],["专注完成自己部分","专注"]]},
-{type:2,text:"我喜欢在变化中保持灵活与适应。",strength:"适应"},
-{type:2,text:"我注重承诺与责任感，别人信任我。",strength:"责任"},
-{type:2,text:"我喜欢深度分析复杂问题。",strength:"分析"},
-{type:2,text:"我擅长用语言表达自己的想法。",strength:"沟通"},
-{type:2,text:"我对目标有强烈执行力。",strength:"行动"},
-{type:2,text:"我善于整理和安排事务。",strength:"统筹"},
-{type:2,text:"我能够高度专注在重要任务上。",strength:"专注"},
-{type:2,text:"我有清晰的价值观，并坚持执行。",strength:"信念"},
-{type:2,text:"我善于与不同类型的人建立联系。",strength:"交往"},
-{type:2,text:"我喜欢思考理念和未来可能性。",strength:"理念"},
-{type:2,text:"我在执行前会谨慎评估风险。",strength:"审慎"},
-{type:4,text:"在团队讨论中，我更倾向：",options:[["提出独特想法","理念"],["关注数据分析","分析"],["鼓励同事","体谅"],["迅速决策","行动"]]},
-{type:4,text:"面对挑战，我更容易：",options:[["坚定信念坚持","信念"],["规划执行步骤","统筹"],["快速适应","适应"],["保持专注","专注"]]},
-{type:2,text:"我喜欢维护团队和谐与关系。",strength:"体谅"},
-{type:2,text:"我总是追求学习和自我成长。",strength:"学习"},
-{type:2,text:"我擅长识别方向和战略机会。",strength:"战略"},
-{type:2,text:"我对长期目标有持续动力。",strength:"成就"},
-{type:2,text:"我重视沟通和表达对团队的影响力。",strength:"沟通"},
-{type:2,text:"我会仔细分析每个决策的利弊。",strength:"分析"},
-{type:2,text:"我能够快速采取行动推动事情落地。",strength:"行动"},
-{type:2,text:"我注重规则和责任履行。",strength:"责任"},
-{type:2,text:"我喜欢有条理地组织和安排工作。",strength:"统筹"},
-{type:2,text:"我能够灵活应对变化和挑战。",strength:"适应"},
-{type:2,text:"我能够深度专注完成关键任务。",strength:"专注"},
-{type:2,text:"我坚持自己的核心价值观。",strength:"信念"},
-{type:2,text:"我善于建立与维护人际关系。",strength:"交往"},
-{type:2,text:"我善于思考未来趋势和理念。",strength:"理念"}
+{type:2,text:"我经常主动寻找新知识、新课程或新技能来提升自己。",strength:"Learner"},
+{type:2,text:"面对复杂问题，我习惯先整体思考路径与方向。",strength:"Strategic"},
+{type:2,text:"我很容易觉察到他人的情绪变化。",strength:"Empathy"},
+{type:2,text:"完成目标本身会带给我强烈满足感。",strength:"Achiever"},
+{type:2,text:"做决策前我会反复权衡风险。",strength:"Deliberative"},
+{type:4,text:"当面对新机会时，我通常：",options:[["立刻行动尝试","Activator"],["深入分析利弊","Analytical"],["先考虑长期方向","Futuristic"],["询问他人感受","Empathy"]]},
+{type:4,text:"团队分工混乱时，我更可能：",options:[["主动统筹协调","Arranger"],["自己默默承担任务","Responsibility"],["鼓舞士气沟通","Communication"],["专注完成自己部分","Focus"]]},
+{type:2,text:"我喜欢在变化中保持灵活与适应。",strength:"Adaptability"},
+{type:2,text:"我注重承诺与责任感，别人信任我。",strength:"Responsibility"},
+{type:2,text:"我喜欢深度分析复杂问题。",strength:"Analytical"},
+{type:2,text:"我擅长用语言表达自己的想法。",strength:"Communication"},
+{type:2,text:"我对目标有强烈执行力。",strength:"Activator"},
+{type:2,text:"我善于整理和安排事务。",strength:"Discipline"},
+{type:2,text:"我能够高度专注在重要任务上。",strength:"Focus"},
+{type:2,text:"我有清晰的价值观，并坚持执行。",strength:"Belief"},
+{type:2,text:"我善于与不同类型的人建立联系。",strength:"Relator"},
+{type:2,text:"我喜欢思考理念和未来可能性。",strength:"Ideation"},
+{type:2,text:"我在执行前会谨慎评估风险。",strength:"Deliberative"},
+{type:4,text:"在团队讨论中，我更倾向：",options:[["提出独特想法","Ideation"],["关注数据分析","Analytical"],["鼓励同事","Empathy"],["迅速决策","Activator"]]},
+{type:4,text:"面对挑战，我更容易：",options:[["坚定信念坚持","Belief"],["规划执行步骤","Arranger"],["快速适应","Adaptability"],["保持专注","Focus"]]},
+{type:2,text:"我喜欢维护团队和谐与关系。",strength:"Harmony"},
+{type:2,text:"我总是追求学习和自我成长。",strength:"Learner"},
+{type:2,text:"我擅长识别方向和战略机会。",strength:"Strategic"},
+{type:2,text:"我对长期目标有持续动力。",strength:"Achiever"},
+{type:2,text:"我重视沟通和表达对团队的影响力。",strength:"Communication"},
+{type:2,text:"我会仔细分析每个决策的利弊。",strength:"Analytical"},
+{type:2,text:"我能够快速采取行动推动事情落地。",strength:"Activator"},
+{type:2,text:"我注重规则和责任履行。",strength:"Responsibility"},
+{type:2,text:"我喜欢有条理地组织和安排工作。",strength:"Arranger"},
+{type:2,text:"我能够灵活应对变化和挑战。",strength:"Adaptability"}
 ];
 
+// 渲染题目
 let quizDiv=document.getElementById("quiz");
 let cards=[];
 questions.forEach((q,i)=>{
@@ -191,12 +132,9 @@ questions.forEach((q,i)=>{
   quizDiv.appendChild(div);
   cards.push(div);
 });
-
-// 显示第一题
 let currentIndex=0;
 if(cards.length>0) cards[0].classList.add("active");
 
-// 进度条更新
 function updateProgress(){
   let percent=((currentIndex)/questions.length)*100;
   document.getElementById("progress").style.width=percent+"%";
@@ -204,7 +142,7 @@ function updateProgress(){
 
 // 卡片切换
 cards.forEach((card,i)=>{
-  let inputs = card.querySelectorAll("input[type=radio]");
+  let inputs=card.querySelectorAll("input[type=radio]");
   inputs.forEach(input=>{
     input.addEventListener("change",()=>{
       card.classList.remove("active");
@@ -219,10 +157,6 @@ cards.forEach((card,i)=>{
 
 // 提交
 function calculate(){
-  let name=document.getElementById("name").value.trim();
-  let wechat=document.getElementById("wechat").value.trim();
-  if(!name||!wechat){alert("请填写姓名和微信"); return;}
-
   questions.forEach((q,i)=>{
     let selected=document.querySelector(`input[name="q${i}"]:checked`);
     if(!selected) return;
@@ -234,57 +168,16 @@ function calculate(){
   let top5=sorted.slice(0,5);
   let top10=sorted.slice(0,10);
 
-  let intro={
-    "学习":"持续渴望成长，对知识保持高度热情。",
-    "战略":"擅长从复杂局面中看清方向。",
-    "体谅":"对他人情绪敏感，富有同理心。",
-    "成就":"强烈驱动力，喜欢完成任务。",
-    "分析":"理性思考，重视逻辑与数据。",
-    "沟通":"表达清晰，善于影响他人。",
-    "责任":"承诺感强，值得信赖。",
-    "行动":"执行迅速，推动事情发生。",
-    "适应":"在变化中保持稳定。",
-    "统筹":"善于组织资源与流程。",
-    "专注":"高度聚焦目标。",
-    "信念":"价值观清晰坚定。",
-    "交往":"善于建立深度关系。",
-    "理念":"热衷思考概念与可能性。",
-    "审慎":"谨慎评估风险。"
-  };
-
   let resultHTML="<h2>你的优势结果</h2><h3>✨ 前5大核心优势</h3><ol>";
   top5.forEach(s=>{resultHTML+=`<li><b>${s[0]}</b><br><small>${intro[s[0]]}</small></li>`;});
   resultHTML+="</ol><h3>🔒 其他潜在优势</h3><div class='blur'><ol>";
   top10.slice(5,10).forEach(s=>{resultHTML+=`<li>${s[0]}</li>`;});
   resultHTML+="</ol></div>";
   resultHTML+=`<h3>🧠 初步分析</h3><p class='fade'>
-  根据你的优势组合，前五优势显示你的核心驱动力和能力倾向，后五潜在优势提供补充信息，对职业选择和个人成长有指导意义……
-  </p><p><b>详细优势解读 + 职业路径建议<br>欢迎预约一对一深度咨询。</b></p>`;
+根据你的优势组合，前五优势显示你的核心驱动力和能力倾向，后五潜在优势提供补充信息，对职业选择和个人成长有指导意义……
+</p><p><b>详细优势解读 + 职业路径建议<br>欢迎预约一对一深度咨询。</b></p>`;
 
   document.getElementById("result").innerHTML=resultHTML;
-  document.getElementById("step3").classList.add("hidden");
-  document.getElementById("result").classList.remove("hidden");
-
-  // 飞书提交
-  let painChecked=document.querySelectorAll('input[name="pain"]:checked');
-  let painText=Array.from(painChecked).map(c=>c.parentElement.textContent.trim()).join(" | ");
-  let top5Text=top5.map(s=>s[0]).join(" | ");
-  let top10Text=top10.map(s=>s[0]).join(" | ");
-  let analysisText=resultHTML.replace(/<[^>]+>/g,'');
-
-  let formData=new FormData();
-  formData.append("姓名",name);
-  formData.append("微信",wechat);
-  formData.append("困境",painText);
-  formData.append("前五优势",top5Text);
-  formData.append("前十优势",top10Text);
-  formData.append("完整的分析文字",analysisText);
-
-  fetch(FEISHU_FORM_URL,{
-    method:"POST",
-    body:formData,
-    mode:"no-cors"
-  }).then(()=>{console.log("已提交飞书表单");});
 }
 </script>
 </body>
