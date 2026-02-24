@@ -18,9 +18,7 @@ body{
   box-shadow:0 10px 30px rgba(0,0,0,0.08);
   overflow:hidden;
 }
-h1,h2{
-  text-align:center;
-}
+h1,h2{text-align:center;}
 button{
   background:#4f46e5;
   color:white;
@@ -49,9 +47,9 @@ button:hover{background:#4338ca;}
   margin-bottom:20px;
   box-shadow:0 2px 8px rgba(0,0,0,0.05);
   transition: transform 0.3s, opacity 0.3s;
+  display:none; /* 默认隐藏 */
 }
-.card.active{transform: translateX(0); opacity:1;}
-.card.inactive{transform: translateX(120%); opacity:0; position:absolute; top:0; left:0; width:100%;}
+.card.active{display:block; transform:translateX(0); opacity:1;}
 input[type="text"]{
   width:calc(100% - 20px);
   padding:8px;
@@ -108,7 +106,7 @@ input[type="text"]{
 
 <div class="progress-bar"><div class="progress" id="progress"></div></div>
 
-<div id="quiz" style="position:relative;"></div>
+<div id="quiz"></div>
 <button onclick="calculate()">提交测试</button>
 </div>
 
@@ -118,10 +116,8 @@ input[type="text"]{
 </div>
 
 <script>
-// 飞书表单链接
 const FEISHU_FORM_URL="https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc";
 
-// 步骤控制
 function nextStep(step){
   document.getElementById("step1").classList.add("hidden");
   document.getElementById("step2").classList.add("hidden");
@@ -129,34 +125,25 @@ function nextStep(step){
   document.getElementById("step"+step).classList.remove("hidden");
 }
 
-// 验证困境多选
 function validatePain(){
   let checked=document.querySelectorAll('input[name="pain"]:checked');
   if(checked.length>3){alert("最多选择3项"); return;}
   nextStep(3);
 }
 
-// 15优势示例，可扩展到34
-let strengths={
-"学习":0,"战略":0,"体谅":0,"成就":0,"分析":0,
+let strengths={"学习":0,"战略":0,"体谅":0,"成就":0,"分析":0,
 "沟通":0,"责任":0,"行动":0,"适应":0,"统筹":0,
-"专注":0,"信念":0,"交往":0,"理念":0,"审慎":0
-};
+"专注":0,"信念":0,"交往":0,"理念":0,"审慎":0};
 
-// 30题示例（完整可继续扩展）
+// 30题
 let questions=[
 {type:2,text:"我经常主动寻找新知识、新课程或新技能来提升自己。",strength:"学习"},
 {type:2,text:"面对复杂问题，我习惯先整体思考路径与方向。",strength:"战略"},
 {type:2,text:"我很容易觉察到他人的情绪变化。",strength:"体谅"},
 {type:2,text:"完成目标本身会带给我强烈满足感。",strength:"成就"},
 {type:2,text:"做决策前我会反复权衡风险。",strength:"审慎"},
-{type:4,text:"当面对新机会时，我通常：",options:[
-["立刻行动尝试","行动"],["深入分析利弊","分析"],["先考虑长期方向","战略"],["询问他人感受","体谅"]
-]},
-{type:4,text:"团队分工混乱时，我更可能：",options:[
-["主动统筹协调","统筹"],["自己默默承担任务","责任"],["鼓舞士气沟通","沟通"],["专注完成自己部分","专注"]
-]},
-// 下面补全23题
+{type:4,text:"当面对新机会时，我通常：",options:[["立刻行动尝试","行动"],["深入分析利弊","分析"],["先考虑长期方向","战略"],["询问他人感受","体谅"]]},
+{type:4,text:"团队分工混乱时，我更可能：",options:[["主动统筹协调","统筹"],["自己默默承担任务","责任"],["鼓舞士气沟通","沟通"],["专注完成自己部分","专注"]]},
 {type:2,text:"我喜欢在变化中保持灵活与适应。",strength:"适应"},
 {type:2,text:"我注重承诺与责任感，别人信任我。",strength:"责任"},
 {type:2,text:"我喜欢深度分析复杂问题。",strength:"分析"},
@@ -168,12 +155,8 @@ let questions=[
 {type:2,text:"我善于与不同类型的人建立联系。",strength:"交往"},
 {type:2,text:"我喜欢思考理念和未来可能性。",strength:"理念"},
 {type:2,text:"我在执行前会谨慎评估风险。",strength:"审慎"},
-{type:4,text:"在团队讨论中，我更倾向：",options:[
-["提出独特想法","理念"],["关注数据分析","分析"],["鼓励同事","体谅"],["迅速决策","行动"]
-]},
-{type:4,text:"面对挑战，我更容易：",options:[
-["坚定信念坚持","信念"],["规划执行步骤","统筹"],["快速适应","适应"],["保持专注","专注"]
-]},
+{type:4,text:"在团队讨论中，我更倾向：",options:[["提出独特想法","理念"],["关注数据分析","分析"],["鼓励同事","体谅"],["迅速决策","行动"]]},
+{type:4,text:"面对挑战，我更容易：",options:[["坚定信念坚持","信念"],["规划执行步骤","统筹"],["快速适应","适应"],["保持专注","专注"]]},
 {type:2,text:"我喜欢维护团队和谐与关系。",strength:"体谅"},
 {type:2,text:"我总是追求学习和自我成长。",strength:"学习"},
 {type:2,text:"我擅长识别方向和战略机会。",strength:"战略"},
@@ -190,12 +173,11 @@ let questions=[
 {type:2,text:"我善于思考未来趋势和理念。",strength:"理念"}
 ];
 
-// 渲染题目卡片
 let quizDiv=document.getElementById("quiz");
 let cards=[];
 questions.forEach((q,i)=>{
   let div=document.createElement("div");
-  div.className="card inactive";
+  div.className="card";
   let html="<p>"+(i+1)+". "+q.text+"</p>";
   if(q.type==2){
     html+=`<input type="radio" name="q${i}" value="1"> 符合
@@ -210,11 +192,11 @@ questions.forEach((q,i)=>{
   cards.push(div);
 });
 
-// 显示第一张卡片
+// 显示第一题
 let currentIndex=0;
-if(cards.length>0) cards[0].classList.remove("inactive");
+if(cards.length>0) cards[0].classList.add("active");
 
-// 进度条
+// 进度条更新
 function updateProgress(){
   let percent=((currentIndex)/questions.length)*100;
   document.getElementById("progress").style.width=percent+"%";
@@ -222,13 +204,13 @@ function updateProgress(){
 
 // 卡片切换
 cards.forEach((card,i)=>{
-  let inputs=card.querySelectorAll("input[type=radio]");
+  let inputs = card.querySelectorAll("input[type=radio]");
   inputs.forEach(input=>{
     input.addEventListener("change",()=>{
-      card.classList.add("inactive");
+      card.classList.remove("active");
       currentIndex++;
       if(currentIndex<cards.length){
-        cards[currentIndex].classList.remove("inactive");
+        cards[currentIndex].classList.add("active");
         updateProgress();
       }
     });
