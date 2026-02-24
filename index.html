@@ -2,22 +2,76 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>盖洛普优势测评</title>
+<title>盖洛普优势探索 · 30题修正版</title>
 <style>
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:linear-gradient(135deg,#eef2ff,#fdf4ff);color:#333;}
-.page{display:none;max-width:900px;margin:40px auto;background:white;padding:40px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.1);animation:fade .5s ease;}
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:linear-gradient(135deg,#eef2ff,#fdf4ff);
+color:#333;
+}
+.page{
+display:none;
+max-width:900px;
+margin:40px auto;
+background:white;
+padding:40px;
+border-radius:20px;
+box-shadow:0 20px 60px rgba(0,0,0,0.1);
+animation:fade .5s ease;
+}
 .active{display:block;}
 h1,h2{text-align:center;color:#4f46e5;}
-button{background:linear-gradient(90deg,#6366f1,#a855f7);color:white;border:none;padding:12px 26px;border-radius:12px;cursor:pointer;font-size:16px;transition:.3s;}
+button{
+background:linear-gradient(90deg,#6366f1,#a855f7);
+color:white;
+border:none;
+padding:12px 26px;
+border-radius:12px;
+cursor:pointer;
+font-size:16px;
+transition:.3s;
+}
 button:hover{transform:translateY(-2px);}
-.option{background:#f9fafb;padding:14px;margin:10px 0;border-radius:12px;cursor:pointer;transition:.3s;}
+.option{
+background:#f9fafb;
+padding:14px;
+margin:10px 0;
+border-radius:12px;
+cursor:pointer;
+transition:.3s;
+}
 .option:hover{background:#eef2ff;}
-.progress-wrap{height:10px;background:#eee;border-radius:10px;overflow:hidden;margin-bottom:20px;}
-.progress{height:10px;width:0%;background:linear-gradient(90deg,#6366f1,#ec4899);transition:.4s;}
-.blur{filter:blur(6px);user-select:none;}
-.nav{display:flex;justify-content:space-between;margin-top:20px;}
-@keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-@media (max-width:600px){.page{margin:20px;padding:20px;border-radius:15px;}h1,h2{font-size:20px;}button{padding:12px 20px;font-size:14px;}.option{padding:12px;font-size:14px;}.progress-wrap{height:8px;}}
+.progress-wrap{
+height:10px;
+background:#eee;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:20px;
+}
+.progress{
+height:10px;
+width:0%;
+background:linear-gradient(90deg,#6366f1,#ec4899);
+transition:.4s;
+}
+.nav{
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+}
+@keyframes fade{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+/* 手机端适配 */
+@media (max-width:600px){
+.page{margin:20px;padding:20px;border-radius:15px;}
+h1,h2{font-size:20px;}
+button{padding:10px 18px;font-size:14px;}
+.option{padding:12px;font-size:14px;}
+.progress-wrap{height:8px;}
+}
 </style>
 </head>
 <body>
@@ -26,22 +80,22 @@ button:hover{transform:translateY(-2px);}
 <div class="page active" id="page1">
 <h1>盖洛普优势探索 · 30题初测</h1>
 <p>
-部分题目为“符合 / 不符合”，部分题目为四选一。  
-无需过度思考，请选择更偏向你的选项即可。  
+部分题目为“符合 / 不符合”，部分题目为四选一。<br>
+无需过度思考，请选择更偏向你的选项即可。<br>
 本测评为参考盖洛普优势理论设计的初步探索版本。
 </p>
 <div style="text-align:center;margin-top:30px;">
-<button id="startBtn">开始测试</button>
+<button onclick="go(2)">开始测试</button>
 </div>
 </div>
 
 <!-- STEP2 -->
 <div class="page" id="page2">
 <h2>你目前的面临的困境/最想解决的问题是什么？（最多选3项）</h2>
-<div id="problemBox" style="margin-top:20px;"></div>
+<div id="problemBox"></div>
 <div style="text-align:center;margin-top:30px;">
-<button id="backToStep1">返回</button>
-<button id="goToTest">进入正式测试</button>
+<button onclick="go(1)">返回</button>
+<button onclick="goTest()">进入正式测试</button>
 </div>
 </div>
 
@@ -65,10 +119,8 @@ button:hover{transform:translateY(-2px);}
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-
-  // ======== 数据 ========
-  const strengthIntro={
+/* 优势定义 + 解释 */
+const strengthIntro={
 "学习 Learner":"你对知识充满渴望，持续成长是你的核心驱动力。",
 "思维 Intellection":"你喜欢深度思考，习惯独立分析问题本质。",
 "体谅 Empathy":"你能够敏锐感知他人情绪，善于建立信任关系。",
@@ -86,28 +138,36 @@ document.addEventListener("DOMContentLoaded", function() {
 "竞争 Competition":"你渴望胜出，通过比较激发动力。",
 "交往 Woo":"你擅长与陌生人建立联系，社交自然流畅。"
 };
-  let strengths={}; for(let k in strengthIntro){strengths[k]=0;}
-  const problems=["😫 职场倦怠，意义感缺失","😶‍🌫️ 想改变却不敢行动","🌍 留学信息混乱怕选错","🤯 不清楚留学与职业衔接","👩‍🏫 想转国际教育赛道","😵‍💫 焦虑内耗反复纠结"];
-  let selectedProblems=[];
+let strengths={};
+for(let k in strengthIntro){strengths[k]=0;}
 
-  let problemBox=document.getElementById("problemBox");
-  problems.forEach(p=>{
-    let div=document.createElement("div");
-    div.className="option";
-    div.innerHTML=`<input type="checkbox"> ${p}`;
-    div.onclick=function(){
-      let box=div.querySelector("input");
-      if(!box.checked && selectedProblems.length>=3){alert("最多选择3项");return;}
-      box.checked=!box.checked;
-      if(box.checked){selectedProblems.push(p);}else{selectedProblems=selectedProblems.filter(x=>x!=p);}
-    };
-    problemBox.appendChild(div);
-  });
+/* 困境选项 */
+const problems=[
+"😫 职场倦怠，意义感缺失",
+"😶‍🌫️ 想改变却不敢行动",
+"🌍 留学信息混乱怕选错",
+"🤯 不清楚留学与职业衔接",
+"👩‍🏫 想转国际教育赛道",
+"😵‍💫 焦虑内耗反复纠结"
+];
+let selectedProblems=[];
+let problemBox=document.getElementById("problemBox");
+problems.forEach(p=>{
+let div=document.createElement("div");
+div.className="option";
+div.innerHTML=`<input type="checkbox"> ${p}`;
+div.onclick=function(){
+let box=div.querySelector("input");
+if(!box.checked && selectedProblems.length>=3){alert("最多选择3项");return;}
+box.checked=!box.checked;
+if(box.checked){selectedProblems.push(p);}else{selectedProblems=selectedProblems.filter(x=>x!=p);}
+};
+problemBox.appendChild(div);
+});
 
-  // ======== 题目 ========
-  const questions=[
-/* 四选题 */
-{type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"],map:"行动 Activator"},
+/* 题库 */
+const questions=[
+{type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"] ,map:"行动 Activator"},
 {type:"four",text:"当你做职业决策时，更倾向于：",options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
 {type:"four",text:"团队出现冲突时，你更可能：",options:["主动调解","保持观察","避免参与","据理力争"],map:"体谅 Empathy"},
 {type:"four",text:"在学习新知识时，你更像：",options:["持续深挖","系统总结","快速应用","只学必要部分"],map:"学习 Learner"},
@@ -123,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function() {
 {type:"four",text:"面对未知机会时，你：",options:["主动尝试","谨慎观察","担忧失败","拒绝变化"],map:"自信 Self-Assurance"},
 {type:"four",text:"工作状态最好时，你：",options:["高度专注","与人互动","自由探索","轻松执行"],map:"专注 Focus"},
 {type:"four",text:"社交场合中，你：",options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:"交往 Woo"},
-/* 双选题 */
+
 {type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
 {type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
 {type:"binary",text:"我天生乐观。",map:"积极 Positivity"},
@@ -138,65 +198,69 @@ document.addEventListener("DOMContentLoaded", function() {
 {type:"binary",text:"我喜欢赢过别人。",map:"竞争 Competition"},
 {type:"binary",text:"我对自己判断有信心。",map:"自信 Self-Assurance"},
 {type:"binary",text:"我善于理解他人感受。",map:"体谅 Empathy"}
-  ];
+];
 
-  let current=0,answers={},top5=[],top10=[],fullAnalysisText="";
+let current=0;
+let answers={};
 
-  function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById("page"+id).classList.add("active");}
-
-  document.getElementById("startBtn").addEventListener("click", ()=>go(2));
-  document.getElementById("backToStep1").addEventListener("click", ()=>go(1));
-  document.getElementById("goToTest").addEventListener("click", ()=>{
-    if(selectedProblems.length===0){ alert("请选择至少一项困境"); return; }
-    go(3); renderQuestion();
-  });
-
-  function renderQuestion(){
-    let q=questions[current];
-    let html=`<p><b>${current+1}/${questions.length}</b> ${q.text}</p>`;
-    if(q.type==="binary"){
-      html+=`<div class="option"><input type="radio" name="q" value="1"> 符合</div>
-             <div class="option"><input type="radio" name="q" value="0"> 不符合</div>`;
-    }else{
-      q.options.forEach((opt,i)=>{html+=`<div class="option"><input type="radio" name="q" value="${i+1}"> ${opt}</div>`;});
-    }
-    document.getElementById("questionBox").innerHTML=html;
-    if(answers[current]){
-      document.querySelectorAll("input[name=q]").forEach(r=>{if(r.value==answers[current]) r.checked=true;});
-    }
-    document.getElementById("nextBtn").innerText=(current===questions.length-1)?"查看结果":"下一题";
-    document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";
-  }
-  window.next=function(){
-    let checked=document.querySelector("input[name=q]:checked");
-    if(!checked){alert("请选择一个选项");return;}
-    answers[current]=checked.value;
-    if(current<questions.length-1){current++;renderQuestion();}else{calculate();}
-  }
-  window.prev=function(){if(current>0){current--;renderQuestion();}}
-
-  function calculate(){
-    for(let k in strengths){strengths[k]=0;}
-    questions.forEach((q,i)=>{
-      if(!(q.map in strengths)) return;
-      if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
-      if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
-    });
-    let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
-    top5=sorted.slice(0,5); top10=sorted.slice(0,10);
-    fullAnalysisText=`你的优势完整排序为：${top10.map(x=>x[0]).join("、")}`;
-    go("resultPage");
-    let html="<h3>✨ 前5大优势</h3><ol>";
-    top5.forEach(s=>html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`);
-    html+="</ol><h3>🔒 潜在优势</h3><div class='blur'><ol>";
-    top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);html+="</ol></div>";
-    let top5names=top5.map(x=>x[0].split(" ")[0]).join("、");
-    html+=`<h3>🧠 初步分析</h3><p>根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略，也有执行力与理解他人的能力，适合在有挑战又允许自主发挥的环境中发展。</p>
-    <p class="blur">其他潜在优势在不同场景可能发挥作用，帮助优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。</p>`;
-    document.getElementById("result").innerHTML=html;
-  }
-
+function renderQuestion(){
+let q=questions[current];
+let html=`<p><b>${current+1}/30</b> ${q.text}</p>`;
+if(q.type==="binary"){
+html+=`<div class="option"><input type="radio" name="q" value="1"> 符合</div>
+<div class="option"><input type="radio" name="q" value="0"> 不符合</div>`;
+}else{
+q.options.forEach((opt,i)=>{
+html+=`<div class="option"><input type="radio" name="q" value="${i+1}"> ${opt}</div>`;
 });
+}
+document.getElementById("questionBox").innerHTML=html;
+if(answers[current]){
+document.querySelectorAll("input[name=q]").forEach(r=>{if(r.value==answers[current]) r.checked=true;});
+}
+document.getElementById("nextBtn").innerText=(current===questions.length-1)?"查看结果":"下一题";
+updateProgress();
+}
+
+function updateProgress(){
+document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";
+}
+
+function next(){
+let checked=document.querySelector("input[name=q]:checked");
+if(!checked){alert("请选择一个选项");return;}
+answers[current]=checked.value;
+if(current<questions.length-1){current++;renderQuestion();}
+else{calculate();}
+}
+
+function prev(){if(current>0){current--;renderQuestion();}}
+
+function calculate(){
+for(let k in strengths){strengths[k]=0;}
+questions.forEach((q,i)=>{
+if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
+if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
+});
+let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
+let top5=sorted.slice(0,5);
+go("resultPage");
+let html="<h3>✨ 前5大优势</h3><ol>";
+top5.forEach(s=>html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`);
+html+="</ol>";
+document.getElementById("result").innerHTML=html;
+}
+
+function go(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+if(typeof id==="number") document.getElementById("page"+id).classList.add("active");
+else document.getElementById(id).classList.add("active");
+}
+
+function goTest(){
+if(selectedProblems.length===0){alert("请选择至少一项困境");return;}
+go(3);renderQuestion();
+}
 </script>
 </body>
 </html>
