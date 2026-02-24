@@ -6,76 +6,75 @@
 
 <style>
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:linear-gradient(135deg,#eef2ff,#fdf4ff);
-  color:#333;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:linear-gradient(135deg,#eef2ff,#fdf4ff);
+color:#333;
 }
 
 .page{
-  display:none;
-  max-width:900px;
-  margin:40px auto;
-  background:white;
-  padding:40px;
-  border-radius:20px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.1);
-  animation:fadeIn .6s ease;
+display:none;
+max-width:900px;
+margin:40px auto;
+background:white;
+padding:40px;
+border-radius:20px;
+box-shadow:0 20px 60px rgba(0,0,0,0.1);
+animation:fade .5s ease;
 }
 
 .active{display:block;}
 
-h1,h2{color:#4f46e5;text-align:center;}
+h1,h2{text-align:center;color:#4f46e5;}
 
 button{
-  background:linear-gradient(90deg,#6366f1,#a855f7);
-  color:white;
-  border:none;
-  padding:12px 26px;
-  border-radius:12px;
-  cursor:pointer;
-  font-size:16px;
-  transition:.3s;
+background:linear-gradient(90deg,#6366f1,#a855f7);
+color:white;
+border:none;
+padding:12px 26px;
+border-radius:12px;
+cursor:pointer;
+font-size:16px;
+transition:.3s;
 }
 button:hover{transform:translateY(-2px);}
 
 .option{
-  background:#f9fafb;
-  padding:14px;
-  margin:10px 0;
-  border-radius:12px;
-  cursor:pointer;
-  transition:.3s;
+background:#f9fafb;
+padding:14px;
+margin:10px 0;
+border-radius:12px;
+cursor:pointer;
+transition:.3s;
 }
 .option:hover{background:#eef2ff;}
-.option input{margin-right:8px;}
 
 .progress-wrap{
-  height:10px;
-  background:#eee;
-  border-radius:10px;
-  overflow:hidden;
-  margin-bottom:20px;
+height:10px;
+background:#eee;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:20px;
 }
 .progress{
-  height:10px;
-  width:0%;
-  background:linear-gradient(90deg,#6366f1,#ec4899);
-  transition:.4s;
+height:10px;
+width:0%;
+background:linear-gradient(90deg,#6366f1,#ec4899);
+transition:.4s;
 }
 
 .blur{
-  filter:blur(6px);
-  user-select:none;
+filter:blur(6px);
+user-select:none;
 }
 
 .nav{
-  margin-top:20px;
-  display:flex;
-  justify-content:space-between;
+display:flex;
+justify-content:space-between;
+margin-top:20px;
 }
-small{color:#777;}
-@keyframes fadeIn{
+
+@keyframes fade{
 from{opacity:0;transform:translateY(10px);}
 to{opacity:1;transform:translateY(0);}
 }
@@ -83,61 +82,42 @@ to{opacity:1;transform:translateY(0);}
 </head>
 <body>
 
-<!-- STEP 1 -->
+<!-- STEP1 -->
 <div class="page active" id="page1">
 <h1>盖洛普优势探索 · 30题初测</h1>
-
 <p>
-本测评参考盖洛普官方34项优势理论设计。
+部分题目只有“符合 / 不符合”两个选项，部分题目有四个选项。  
+无需过度思考，请选择更偏向你的选项即可。  
+这是一次初步探索，未来可以重复测试对比变化。
 </p>
-
-<p>
-部分题目只有 <b>“符合 / 不符合”</b> 两个选项，  
-部分题目有 <b>四个选项</b>。
-</p>
-
-<p>
-无需过度思考，请选择 <b>更偏向</b> 你的那个选项即可。  
-这是一次初步探索，未来可以再次测试对比变化。
-</p>
-
 <div style="text-align:center;margin-top:30px;">
 <button onclick="go(2)">开始测试</button>
 </div>
 </div>
 
-
-<!-- STEP 2 -->
+<!-- STEP2 -->
 <div class="page" id="page2">
-<h2>第二步：了解你当前的状态</h2>
-
+<h2>第二步：了解你的现状</h2>
 <p>你目前最想解决的问题是？（最多选3项）</p>
-
-<div id="problemOptions"></div>
-
+<div id="problemBox"></div>
 <div style="text-align:center;margin-top:30px;">
 <button onclick="go(1)">返回</button>
 <button onclick="goTest()">进入正式测试</button>
 </div>
 </div>
 
-
-<!-- STEP 3 -->
+<!-- STEP3 -->
 <div class="page" id="page3">
 <h2>正式测评</h2>
-
 <div class="progress-wrap">
 <div class="progress" id="progress"></div>
 </div>
-
 <div id="questionBox"></div>
-
 <div class="nav">
 <button onclick="prev()">上一题</button>
-<button onclick="next()">下一题</button>
+<button id="nextBtn" onclick="next()">下一题</button>
 </div>
 </div>
-
 
 <!-- RESULT -->
 <div class="page" id="resultPage">
@@ -145,50 +125,34 @@ to{opacity:1;transform:translateY(0);}
 <div id="result"></div>
 </div>
 
-
-
 <script>
 
-/* ---------- 优势列表 ---------- */
-
+/* 优势池 */
 const strengths = {
-"学习 Learner":0,
-"思维 Intellection":0,
-"体谅 Empathy":0,
-"战略 Strategic":0,
-"成就 Achiever":0,
-"沟通 Communication":0,
-"适应 Adaptability":0,
-"行动 Activator":0,
-"专注 Focus":0,
-"责任 Responsibility":0,
-"积极 Positivity":0,
-"统筹 Arranger":0,
-"分析 Analytical":0,
-"自信 Self-Assurance":0,
-"竞争 Competition":0,
-"交往 Woo":0
+"学习 Learner":0,"思维 Intellection":0,"体谅 Empathy":0,"战略 Strategic":0,
+"成就 Achiever":0,"沟通 Communication":0,"适应 Adaptability":0,
+"行动 Activator":0,"专注 Focus":0,"责任 Responsibility":0,
+"积极 Positivity":0,"统筹 Arranger":0,"分析 Analytical":0,
+"自信 Self-Assurance":0,"竞争 Competition":0,"交往 Woo":0
 };
 
-/* ---------- 困境 ---------- */
-
-const problems = [
-"😫 每天上班像上坟，倦怠感严重",
-"😶‍🌫️ 职场瓶颈，想改变却不敢行动",
-"🌍 对海外留学政策和择校一知半解",
-"🤯 不懂留学与职业如何衔接",
-"👩‍🏫 教师发展受限，想转国际赛道",
-"😵‍💫 焦虑内耗，迟迟无法决策"
+/* 困境 */
+const problems=[
+"😫 职场倦怠，意义感缺失",
+"😶‍🌫️ 想改变却不敢行动",
+"🌍 留学信息混乱怕选错",
+"🤯 不清楚留学与职业衔接",
+"👩‍🏫 想转国际教育赛道",
+"😵‍💫 焦虑内耗反复纠结"
 ];
 
 let selectedProblems=[];
-
-let problemDiv=document.getElementById("problemOptions");
+let problemBox=document.getElementById("problemBox");
 
 problems.forEach(p=>{
 let div=document.createElement("div");
 div.className="option";
-div.innerHTML=`<input type="checkbox">${p}`;
+div.innerHTML=`<input type="checkbox"> ${p}`;
 div.onclick=function(){
 let box=div.querySelector("input");
 if(!box.checked && selectedProblems.length>=3){
@@ -202,43 +166,41 @@ selectedProblems.push(p);
 selectedProblems=selectedProblems.filter(x=>x!=p);
 }
 };
-problemDiv.appendChild(div);
+problemBox.appendChild(div);
 });
 
-
-/* ---------- 30题 ---------- */
-
+/* 30题 */
 const questions=[
-{text:"我做事更看重效率和完成度。",type:2,map:"成就 Achiever"},
-{text:"面对变化，我通常能很快适应。",type:2,map:"适应 Adaptability"},
-{text:"我常常提前思考未来可能发生的情况。",type:2,map:"战略 Strategic"},
-{text:"别人遇到情绪问题会来找我倾诉。",type:2,map:"体谅 Empathy"},
-{text:"我喜欢阅读和学习新知识。",type:2,map:"学习 Learner"},
-{text:"我习惯深度思考问题本质。",type:2,map:"思维 Intellection"},
-{text:"在团队里，我自然承担协调角色。",type:2,map:"统筹 Arranger"},
-{text:"我对目标有很强的专注力。",type:2,map:"专注 Focus"},
-{text:"我喜欢与陌生人交流建立联系。",type:2,map:"交往 Woo"},
-{text:"我对结果好坏很敏感，喜欢竞争。",type:2,map:"竞争 Competition"},
-{text:"我常鼓舞团队气氛。",type:2,map:"积极 Positivity"},
-{text:"我说话表达清晰，容易影响他人。",type:2,map:"沟通 Communication"},
-{text:"遇到问题我第一反应是分析原因。",type:2,map:"分析 Analytical"},
-{text:"我行动力很强，说做就做。",type:2,map:"行动 Activator"},
-{text:"我非常重视承诺。",type:2,map:"责任 Responsibility"},
-{text:"我对自己的判断很有信心。",type:2,map:"自信 Self-Assurance"},
-{text:"我喜欢比较，想成为更好的那一个。",type:2,map:"竞争 Competition"},
-{text:"面对突发情况我能冷静应对。",type:2,map:"适应 Adaptability"},
-{text:"我喜欢规划路径。",type:2,map:"战略 Strategic"},
-{text:"完成任务让我有满足感。",type:2,map:"成就 Achiever"},
-{text:"我乐于倾听。",type:2,map:"体谅 Empathy"},
-{text:"我喜欢带动别人行动。",type:2,map:"行动 Activator"},
-{text:"我愿意承担额外责任。",type:2,map:"责任 Responsibility"},
-{text:"我喜欢分享观点。",type:2,map:"沟通 Communication"},
-{text:"我会主动优化现有流程。",type:2,map:"统筹 Arranger"},
-{text:"我持续学习提升自己。",type:2,map:"学习 Learner"},
-{text:"我喜欢长时间专注做一件事。",type:2,map:"专注 Focus"},
-{text:"我天生乐观。",type:2,map:"积极 Positivity"},
-{text:"我习惯独立思考。",type:2,map:"思维 Intellection"},
-{text:"我善于分析复杂问题。",type:2,map:"分析 Analytical"}
+{text:"我做事追求效率与完成度。",map:"成就 Achiever"},
+{text:"我喜欢持续学习新知识。",map:"学习 Learner"},
+{text:"我习惯深度思考问题。",map:"思维 Intellection"},
+{text:"别人常向我倾诉情绪问题。",map:"体谅 Empathy"},
+{text:"我常提前规划未来。",map:"战略 Strategic"},
+{text:"我表达能力强。",map:"沟通 Communication"},
+{text:"面对变化我能快速适应。",map:"适应 Adaptability"},
+{text:"我行动力强，说做就做。",map:"行动 Activator"},
+{text:"我对目标高度专注。",map:"专注 Focus"},
+{text:"我非常有责任感。",map:"责任 Responsibility"},
+{text:"我天生乐观。",map:"积极 Positivity"},
+{text:"我擅长协调资源。",map:"统筹 Arranger"},
+{text:"我喜欢分析复杂问题。",map:"分析 Analytical"},
+{text:"我对自己判断有信心。",map:"自信 Self-Assurance"},
+{text:"我喜欢竞争。",map:"竞争 Competition"},
+{text:"我喜欢认识新朋友。",map:"交往 Woo"},
+{text:"完成任务让我满足。",map:"成就 Achiever"},
+{text:"我习惯独立思考。",map:"思维 Intellection"},
+{text:"我喜欢长期学习。",map:"学习 Learner"},
+{text:"我乐于帮助别人。",map:"体谅 Empathy"},
+{text:"我善于制定策略。",map:"战略 Strategic"},
+{text:"我讲话有感染力。",map:"沟通 Communication"},
+{text:"我冷静应对变化。",map:"适应 Adaptability"},
+{text:"我带动他人行动。",map:"行动 Activator"},
+{text:"我专注力强。",map:"专注 Focus"},
+{text:"我重视承诺。",map:"责任 Responsibility"},
+{text:"我能鼓舞团队。",map:"积极 Positivity"},
+{text:"我优化流程。",map:"统筹 Arranger"},
+{text:"我逻辑清晰。",map:"分析 Analytical"},
+{text:"我渴望胜出。",map:"竞争 Competition"}
 ];
 
 let current=0;
@@ -259,26 +221,30 @@ if(r.value==answers[current]) r.checked=true;
 });
 }
 
+document.getElementById("nextBtn").innerText =
+(current===questions.length-1) ? "查看结果" : "下一题";
+
 updateProgress();
 }
 
 function updateProgress(){
-document.getElementById("progress").style.width=((current)/30*100)+"%";
+document.getElementById("progress").style.width=
+((current+1)/questions.length*100)+"%";
 }
 
 function next(){
 let checked=document.querySelector("input[name=q]:checked");
 if(!checked){
-alert("请先选择一个选项");
+alert("请选择一个选项");
 return;
 }
 answers[current]=checked.value;
 
-if(current<29){
+if(current<questions.length-1){
 current++;
 renderQuestion();
 }else{
-if(Object.keys(answers).length<30){
+if(Object.keys(answers).length<questions.length){
 alert("请完成所有题目");
 return;
 }
@@ -293,8 +259,6 @@ renderQuestion();
 }
 }
 
-/* ---------- 计算 ---------- */
-
 function calculate(){
 for(let k in strengths){strengths[k]=0;}
 questions.forEach((q,i)=>{
@@ -306,45 +270,42 @@ let top10=sorted.slice(0,10);
 
 go("resultPage");
 
-let html="<h3>✨ 你的前5大优势</h3><ol>";
-top5.forEach(s=>{
-html+=`<li><b>${s[0]}</b></li>`;
-});
+let html="<h3>✨ 前5大优势</h3><ol>";
+top5.forEach(s=>html+=`<li><b>${s[0]}</b></li>`);
 html+="</ol>";
 
 html+="<h3>🔒 潜在优势</h3><div class='blur'><ol>";
-top10.slice(5).forEach(s=>{
-html+=`<li>${s[0]}</li>`;
-});
+top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);
 html+="</ol></div>";
 
 html+=`
 <h3>🧠 初步分析</h3>
 <p>
-你的优势组合呈现出鲜明的个性结构，
-这些特质会深刻影响你的决策方式与职业路径。
+你的优势组合体现出明显的能力倾向，
+这些特质将深刻影响你的职业选择与决策方式。
 </p>
-<p class='blur'>
-结合你选择的困境与优势结构，
-你适合在发挥核心优势的领域深耕发展，
-若想获得更清晰的职业策略，
-欢迎预约一对一深度解读咨询。
+<p class="blur">
+结合你的困境选择与优势结构，
+建议围绕核心优势规划发展路径，
+若希望获得更深入解读，
+欢迎预约一对一咨询。
 </p>
 `;
 
 document.getElementById("result").innerHTML=html;
 }
 
-
-/* ---------- 页面跳转 ---------- */
-
 function go(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+if(typeof id==="number"){
 document.getElementById("page"+id).classList.add("active");
+}else{
+document.getElementById(id).classList.add("active");
+}
 }
 
 function goTest(){
-if(selectedProblems.length==0){
+if(selectedProblems.length===0){
 alert("请选择至少一项困境");
 return;
 }
