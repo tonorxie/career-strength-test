@@ -68,13 +68,30 @@ button:hover{transform:translateY(-2px);}
   from{opacity:0;transform:translateY(10px);}
   to{opacity:1;transform:translateY(0);}
 }
-/* 手机端适配 */
+/* 手机竖屏适配 */
 @media (max-width:600px){
-  .page{margin:20px;padding:20px;border-radius:15px;}
-  h1,h2{font-size:20px;}
-  button{padding:10px 18px;font-size:14px;}
-  .option{padding:12px;font-size:14px;}
-  .progress-wrap{height:8px;}
+  body{padding:0;}
+  .page{
+    margin:10px;
+    padding:20px;
+    border-radius:15px;
+  }
+  h1{font-size:22px;}
+  h2{font-size:18px;}
+  button{
+    padding:14px 20px;
+    font-size:16px;
+    width:100%;
+    box-sizing:border-box;
+    margin-bottom:10px;
+  }
+  .option{
+    padding:16px;
+    font-size:16px;
+  }
+  .nav{flex-direction:column;}
+  .nav button{width:100%; margin:5px 0;}
+  .progress-wrap{height:12px;}
 }
 </style>
 </head>
@@ -123,7 +140,6 @@ button:hover{transform:translateY(-2px);}
 </div>
 
 <script>
-/* 优势定义 + 解释 */
 const strengthIntro={
 "学习 Learner":"你对知识充满渴望，持续成长是你的核心驱动力。",
 "思维 Intellection":"你喜欢深度思考，习惯独立分析问题本质。",
@@ -145,7 +161,6 @@ const strengthIntro={
 let strengths={};
 for(let k in strengthIntro){strengths[k]=0;}
 
-/* 困境选项 */
 const problems=[
 "😫 职场倦怠，意义感缺失",
 "😶‍🌫️ 想改变却不敢行动",
@@ -169,7 +184,6 @@ problems.forEach(p=>{
   problemBox.appendChild(div);
 });
 
-/* 题库 */
 const questions=[
 {type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"] ,map:"行动 Activator"},
 {type:"four",text:"当你做职业决策时，更倾向于：",options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
@@ -261,10 +275,10 @@ function calculate(){
 
   html+=`<h3>🧠 初步分析</h3>
   <p>
-  根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略思维，也有行动力与执行力，且善于理解他人，适合在有挑战又允许自主发挥的环境中发展。
+  根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略思维，也有行动力与执行力，且善于理解他人。
   </p>
   <p class="blur">
-  其他潜在优势和细节分析在不同场景发挥作用，帮助你进一步提升。
+  其他潜在优势和细节分析在不同场景发挥作用。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。
   </p>`;
 
   document.getElementById("result").innerHTML=html;
