@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>职业优势风格测评</title>
+<style>
+body{
+font-family: Arial;
+max-width: 700px;
+margin: auto;
+padding: 20px;
+background:#f5f7fa;
+}
+.question{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+button{
+padding:10px;
+margin-top:10px;
+background:#4a6cf7;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+.result{
+background:#ffffff;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>职业优势风格测评（30题）</h1>
+<p>请选择每题中更符合你的选项。</p>
+
+<div id="quiz"></div>
+<button onclick="calculate()">提交并查看结果</button>
+<div id="result"></div>
+
+<script>
+
+let strengths = {
+"执行力":0,"学习力":0,"战略思维":0,"影响力":0,"沟通表达":0,
+"分析能力":0,"责任感":0,"同理心":0,"组织协调":0,"创新力":0,
+"关系建立":0,"目标导向":0,"适应能力":0,"行动力":0,"洞察力":0
+};
+
+let questions = [
+["我喜欢完成清单上的任务","执行力"],
+["我总想学习新知识","学习力"],
+["我擅长规划未来方向","战略思维"],
+["我喜欢影响他人决策","影响力"],
+["我表达观点很清晰","沟通表达"],
+["我习惯用数据分析问题","分析能力"],
+["答应的事情一定做到","责任感"],
+["我能理解他人情绪","同理心"],
+["我喜欢统筹安排事务","组织协调"],
+["我总能想到新点子","创新力"],
+["我重视长期人际关系","关系建立"],
+["我目标感很强","目标导向"],
+["变化中我适应很快","适应能力"],
+["想到就去做","行动力"],
+["我能看透事情本质","洞察力"],
+
+["我做事效率很高","执行力"],
+["我爱看书学习","学习力"],
+["我善于制定计划","战略思维"],
+["我敢于表达不同意见","影响力"],
+["我讲话有感染力","沟通表达"],
+["我喜欢拆解问题","分析能力"],
+["别人信任我","责任感"],
+["我关心他人感受","同理心"],
+["我擅长组织活动","组织协调"],
+["我脑洞大","创新力"],
+["我维护团队氛围","关系建立"],
+["我持续追目标","目标导向"],
+["我面对变化不焦虑","适应能力"],
+["我行动迅速","行动力"],
+["我洞察人性","洞察力"]
+];
+
+let quizDiv = document.getElementById("quiz");
+
+questions.forEach((q,index)=>{
+let div = document.createElement("div");
+div.className="question";
+div.innerHTML=`
+<p>${index+1}. ${q[0]}</p>
+<input type="radio" name="q${index}" value="1"> 符合
+<input type="radio" name="q${index}" value="0"> 不符合
+`;
+quizDiv.appendChild(div);
+});
+
+function calculate(){
+questions.forEach((q,index)=>{
+let radios = document.getElementsByName("q"+index);
+radios.forEach(r=>{
+if(r.checked && r.value==1){
+strengths[q[1]] +=1;
+}
+});
+});
+
+let sorted = Object.entries(strengths)
+.sort((a,b)=>b[1]-a[1])
+.slice(0,10);
+
+let resultHTML = "<div class='result'><h2>你的前10优势：</h2><ol>";
+
+sorted.forEach(s=>{
+resultHTML += "<li>"+s[0]+"</li>";
+});
+
+resultHTML += "</ol><p>想深度解读你的优势组合？欢迎预约职业优势咨询。</p></div>";
+
+document.getElementById("result").innerHTML = resultHTML;
+}
+
+</script>
+</body>
+</html>
