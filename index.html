@@ -1,150 +1,163 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>盖勒普优势测评</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: auto;
-        }
-        h1 {
-            text-align: center;
-        }
-        .step {
-            display: none;
-        }
-        .active {
-            display: block;
-        }
-        .button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #218838;
-        }
-        .progress {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-        .progress-bar {
-            height: 20px;
-            width: 0;
-            background-color: #28a745;
-            transition: width 0.3s;
-        }
-        .options {
-            margin: 10px 0;
-        }
-        .options input {
-            margin-right: 10px;
-        }
-    </style>
+    <title>盖洛普优势测评 - 发现你的天赋</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>盖勒普优势测评</h1>
-        <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
+    <div id="app" class="app-container">
+        <!-- 第一步：测试说明 -->
+        <div id="step1" class="step-page active">
+            <div class="content-wrapper">
+                <div class="header-section">
+                    <h1 class="main-title">🌟 盖洛普优势测评</h1>
+                    <p class="subtitle">发现你的天赋优势，开启职业发展新方向</p>
+                </div>
 
-        <div id="step1" class="step active">
-            <h2>测试说明</h2>
-            <p>部分题目只有“符合”和“不符合”两个选项，部分题目有四个选项，不用思考太多，请选择更偏向的一个选项。这只是一个初步测试，参考了盖洛普官方的测评，以后还可以重复做。</p>
-            <button class="button" onclick="nextStep(1)">下一步</button>
-        </div>
+                <div class="card instruction-card">
+                    <h2>测评说明</h2>
+                    <div class="instruction-content">
+                        <div class="instruction-item">
+                            <span class="icon">📋</span>
+                            <p>本测评包含 <strong>30 道题目</strong>，预计耗时 <strong>8-10 分钟</strong></p>
+                        </div>
+                        <div class="instruction-item">
+                            <span class="icon">⚡</span>
+                            <p>部分题目只有「符合」和「不符合」两个选项，部分题目有四个选项</p>
+                        </div>
+                        <div class="instruction-item">
+                            <span class="icon">💡</span>
+                            <p>不用过度思考，请凭直觉选择最符合或最接近的选项</p>
+                        </div>
+                        <div class="instruction-item">
+                            <span class="icon">🔄</span>
+                            <p>这是一份参考盖洛普官方测评的 <strong>初步评估</strong>，您今后可以重复测试，追踪成长轨迹</p>
+                        </div>
+                        <div class="instruction-item">
+                            <span class="icon">🎯</span>
+                            <p>最终结果将识别您排名 <strong>前 10 个优势领域</strong>，帮助您了解自己的核心能力</p>
+                        </div>
+                    </div>
+                </div>
 
-        <div id="step2" class="step">
-            <h2>了解你的情况</h2>
-            <p>你当前面临的困境/最想解决的问题是什么？（最多选择三个）</p>
-            <div class="options">
-                <label><input type="checkbox" class="problem" value="每天上班像上坟，有严重的倦怠感和意义匮乏感"> 每天上班像上坟，有严重的倦怠感和意义匮乏感</label><br>
-                <label><input type="checkbox" class="problem" value="职场走到瓶颈，想改变却不敢裸辞，留学只停留在 “想”"> 职场走到瓶颈，想改变却不敢裸辞，留学只停留在 “想”</label><br>
-                <label><input type="checkbox" class="problem" value="对海外留学政策、择校、专业、学制一知半解，怕选错、怕亏"> 对海外留学政策、择校、专业、学制一知半解，怕选错、怕亏</label><br>
-                <label><input type="checkbox" class="problem" value="不懂留学与职业如何衔接，担心 “读完回来还是迷茫”"> 不懂留学与职业如何衔接，担心 “读完回来还是迷茫”</label><br>
-                <label><input type="checkbox" class="problem" value="教师赛道发展受限，想转国际教育 / 海外教师等，无清晰路径"> 教师赛道发展受限，想转国际教育 / 海外教师等，无清晰路径</label><br>
-                <label><input type="checkbox" class="problem" value="独自决策没人懂，焦虑、内耗、反复纠结，迟迟无法行动"> 独自决策没人懂，焦虑、内耗、反复纠结，迟迟无法行动</label>
+                <div class="info-box tips">
+                    <p>💬 <strong>小提示：</strong>没有「正确」和「错误」的答案。真实的自我认知比完美答案更宝贵。</p>
+                </div>
+
+                <button class="btn btn-primary btn-large" onclick="app.nextStep()">
+                    开始测评
+                    <span class="btn-arrow">→</span>
+                </button>
             </div>
-            <button class="button" onclick="nextStep(2)">下一步</button>
         </div>
 
-        <div id="step3" class="step">
-            <h2>正式测试</h2>
-            <p>请回答以下问题：</p>
-            <div class="options">
-                <label><input type="radio" name="question1" value="符合"> 符合</label>
-                <label><input type="radio" name="question1" value="不符合"> 不符合</label>
+        <!-- 第二步：需求调查 -->
+        <div id="step2" class="step-page">
+            <div class="content-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 10%;"></div>
+                </div>
+
+                <h2 class="step-title">了解你的现状</h2>
+                <p class="step-subtitle">请选择最符合你当前情况的困境（最多选择 3 个）</p>
+
+                <div class="card survey-card">
+                    <div id="surveyOptions" class="survey-options">
+                        <!-- 动态生成 -->
+                    </div>
+                    <p class="selection-hint" id="selectionHint"></p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="app.prevStep()">
+                        <span class="btn-arrow">←</span> 返回
+                    </button>
+                    <button class="btn btn-primary" id="step2NextBtn" disabled onclick="app.nextStep()">
+                        继续
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
             </div>
-            <div class="options">
-                <label><input type="radio" name="question2" value="选项1"> 选项1</label>
-                <label><input type="radio" name="question2" value="选项2"> 选项2</label>
-                <label><input type="radio" name="question2" value="选项3"> 选项3</label>
-                <label><input type="radio" name="question2" value="选项4"> 选项4</label>
-            </div>
-            <!-- 这里可以添加更多问题 -->
-            <button class="button" onclick="submitTest()">提交测试</button>
         </div>
 
-        <div id="result" class="step">
-            <h2>测试结果</h2>
-            <p>您的前5个优势是：</p>
-            <ul>
-                <li>学习：...</li>
-                <li>思维：...</li>
-                <li>体谅：...</li>
-                <li>沟通：...</li>
-                <li>责任感：...</li>
-            </ul>
-            <p>结合这十个优势的初步分析：...</p>
-            <p>详细分析欢迎预约咨询。</p>
+        <!-- 第三步：正式测评 -->
+        <div id="step3" class="step-page">
+            <div class="content-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
+                </div>
+
+                <div class="question-counter">
+                    <span id="currentQuestion">1</span> / 30
+                </div>
+
+                <div class="card question-card">
+                    <h3 id="questionText" class="question-text"></h3>
+                    <div id="optionsContainer" class="options-container">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="app.prevQuestion()" disabled>
+                        <span class="btn-arrow">←</span> 上一题
+                    </button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="app.nextQuestion()" disabled>
+                        下一题
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第四步：结果展示 -->
+        <div id="step4" class="step-page">
+            <div class="content-wrapper">
+                <div class="results-header">
+                    <h1>🎉 你的优势分析结果</h1>
+                    <p>基于您的回答，以下是您最突出的优势领域</p>
+                </div>
+
+                <div class="top-strengths-section">
+                    <h2>前 5 大优势</h2>
+                    <div id="topStrengths" class="strengths-grid">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <div class="hidden-strengths-section">
+                    <h2>其他优势</h2>
+                    <div class="blur-box">
+                        <p>您还有 5 个其他的优势领域也值得关注</p>
+                        <p class="blur-text">🔒 详细信息已隐藏</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h2>初步分析</h2>
+                    <div class="analysis-content">
+                        <div id="analysisText" class="analysis-text"></div>
+                        <div class="blur-overlay"></div>
+                    </div>
+                    <div class="consultation-cta">
+                        <p>✨ 想要获得更深入的分析和职业发展建议？</p>
+                        <button class="btn btn-primary" onclick="app.consultationCTA()">
+                            预约咨询
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary btn-large" onclick="app.restart()">
+                    重新开始测评
+                </button>
+            </div>
         </div>
     </div>
 
-    <script>
-        let currentStep = 1;
-
-        function nextStep(step) {
-            document.getElementById(`step${step}`).classList.remove('active');
-            currentStep++;
-            document.getElementById(`step${currentStep}`).classList.add('active');
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const percentage = (currentStep - 1) / 3 * 100; // Assuming 3 steps
-            progressBar.style.width = percentage + '%';
-        }
-
-        function submitTest() {
-            // Here you can add logic to handle test submission
-            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
-            document.getElementById('result').classList.add('active');
-            updateProgress();
-        }
-    </script>
+    <script src="js/questions.js"></script>
+    <script src="js/analysis.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
-``*
