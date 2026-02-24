@@ -72,8 +72,10 @@ input[type=text]{padding:8px;font-size:14px;width:100%;margin-top:5px;border-rad
 </div>
 
 <script>
-// ======== 数据和题目 ========
-const strengthIntro={
+document.addEventListener("DOMContentLoaded", function() {
+
+  // ======== 数据 ========
+  const strengthIntro={
 "学习 Learner":"你对知识充满渴望，持续成长是你的核心驱动力。",
 "思维 Intellection":"你喜欢深度思考，习惯独立分析问题本质。",
 "体谅 Empathy":"你能够敏锐感知他人情绪，善于建立信任关系。",
@@ -91,103 +93,148 @@ const strengthIntro={
 "竞争 Competition":"你渴望胜出，通过比较激发动力。",
 "交往 Woo":"你擅长与陌生人建立联系，社交自然流畅。"
 };
-let strengths={}; for(let k in strengthIntro){strengths[k]=0;}
-const problems=["😫 职场倦怠，意义感缺失","😶‍🌫️ 想改变却不敢行动","🌍 留学信息混乱怕选错","🤯 不清楚留学与职业衔接","👩‍🏫 想转国际教育赛道","😵‍💫 焦虑内耗反复纠结"];
-let selectedProblems=[];
+  let strengths={}; for(let k in strengthIntro){strengths[k]=0;}
+  const problems=["😫 职场倦怠，意义感缺失","😶‍🌫️ 想改变却不敢行动","🌍 留学信息混乱怕选错","🤯 不清楚留学与职业衔接","👩‍🏫 想转国际教育赛道","😵‍💫 焦虑内耗反复纠结"];
+  let selectedProblems=[];
 
-// 生成困境选项
-let problemBox=document.getElementById("problemBox");
-problems.forEach(p=>{
-  let div=document.createElement("div");
-  div.className="option";
-  div.innerHTML=`<input type="checkbox"> ${p}`;
-  div.onclick=function(){
-    let box=div.querySelector("input");
-    if(!box.checked && selectedProblems.length>=3){alert("最多选择3项");return;}
-    box.checked=!box.checked;
-    if(box.checked){selectedProblems.push(p);}else{selectedProblems=selectedProblems.filter(x=>x!=p);}
-  };
-  problemBox.appendChild(div);
-});
-
-// 题目示例
-const questions=[
-{type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
-{type:"four",text:"当面对新项目时，你通常会：",options:["立刻行动","先做规划","咨询他人","拖延"],map:"行动 Activator"},
-{type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"}
-];
-let current=0,answers={},top5=[],top10=[],fullAnalysisText="";
-
-// ======== 页面跳转函数 ========
-function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById("page"+id).classList.add("active");}
-document.getElementById("startBtn").onclick=()=>go(2);
-document.getElementById("backToStep1").onclick=()=>go(1);
-
-// 进入正式测试
-document.getElementById("goToTest").onclick=()=>{
-  const name=document.getElementById("userName").value.trim();
-  const wechat=document.getElementById("userWeChat").value.trim();
-  if(!name||!wechat){alert("请输入姓名和微信");return;}
-  if(selectedProblems.length===0){alert("请选择至少一项困境");return;}
-  go(3); renderQuestion();
-};
-
-// ======== 测试题逻辑 ========
-function renderQuestion(){
-  let q=questions[current];
-  let html=`<p><b>${current+1}/${questions.length}</b> ${q.text}</p>`;
-  if(q.type==="binary"){
-    html+=`<div class="option"><input type="radio" name="q" value="1"> 符合</div>
-           <div class="option"><input type="radio" name="q" value="0"> 不符合</div>`;
-  }else{
-    q.options.forEach((opt,i)=>{html+=`<div class="option"><input type="radio" name="q" value="${i+1}"> ${opt}</div>`;});
-  }
-  document.getElementById("questionBox").innerHTML=html;
-  if(answers[current]){
-    document.querySelectorAll("input[name=q]").forEach(r=>{if(r.value==answers[current]) r.checked=true;});
-  }
-  document.getElementById("nextBtn").innerText=(current===questions.length-1)?"查看结果":"下一题";
-  document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";
-}
-function next(){
-  let checked=document.querySelector("input[name=q]:checked");
-  if(!checked){alert("请选择一个选项");return;}
-  answers[current]=checked.value;
-  if(current<questions.length-1){current++;renderQuestion();}else{calculate();}
-}
-function prev(){if(current>0){current--;renderQuestion();}}
-
-// ======== 结果计算与提交（示例，需替换Webhook） ========
-function calculate(){
-  for(let k in strengths){strengths[k]=0;}
-  questions.forEach((q,i)=>{
-    if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
-    if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
+  // 生成困境选项
+  let problemBox=document.getElementById("problemBox");
+  problems.forEach(p=>{
+    let div=document.createElement("div");
+    div.className="option";
+    div.innerHTML=`<input type="checkbox"> ${p}`;
+    div.onclick=function(){
+      let box=div.querySelector("input");
+      if(!box.checked && selectedProblems.length>=3){alert("最多选择3项");return;}
+      box.checked=!box.checked;
+      if(box.checked){selectedProblems.push(p);}else{selectedProblems=selectedProblems.filter(x=>x!=p);}
+    };
+    problemBox.appendChild(div);
   });
-  let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
-  top5=sorted.slice(0,5); top10=sorted.slice(0,10);
-  fullAnalysisText=`你的优势完整排序为：${top10.map(x=>x[0]).join("、")}`;
-  go("resultPage");
-  let html="<h3>✨ 前5大优势</h3><ol>";
-  top5.forEach(s=>html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`);
-  html+="</ol><h3>🔒 潜在优势</h3><div class='blur'><ol>";
-  top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);html+="</ol></div>";
-  let top5names=top5.map(x=>x[0].split(" ")[0]).join("、");
-  html+=`<h3>🧠 初步分析</h3><p>根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略，也有执行力与理解他人的能力，适合在有挑战又允许自主发挥的环境中发展。</p>
-  <p class="blur">其他潜在优势在不同场景可能发挥作用，帮助优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。</p>`;
-  document.getElementById("result").innerHTML=html;
 
-  // 提交到飞书（示例Webhook）
-  submitToFeishu();
-}
+  // ======== 30题（14双选+16四选） ========
+  const questions=[
+{type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
+{type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
+{type:"binary",text:"我能够感知他人情绪并给予支持。",map:"体谅 Empathy"},
+{type:"binary",text:"面对不确定情况，我能保持灵活调整。",map:"适应 Adaptability"},
+{type:"binary",text:"我重视承诺，别人可以依赖我完成任务。",map:"责任 Responsibility"},
+{type:"binary",text:"我习惯把想法迅速付诸行动。",map:"行动 Activator"},
+{type:"binary",text:"我喜欢和团队成员分享正能量。",map:"积极 Positivity"},
+{type:"binary",text:"我擅长用逻辑和数据分析问题。",map:"分析 Analytical"},
+{type:"binary",text:"我能够长期专注于目标并持续推进。",map:"专注 Focus"},
+{type:"binary",text:"我在社交场合能快速建立联系。",map:"交往 Woo"},
+{type:"binary",text:"我擅长表达自己的观点，影响他人。",map:"沟通 Communication"},
+{type:"binary",text:"我喜欢学习新知识并持续成长。",map:"学习 Learner"},
+{type:"binary",text:"我喜欢整合资源，让事情高效运转。",map:"统筹 Arranger"},
+{type:"binary",text:"我有信心面对重大决策与挑战。",map:"自信 Self-Assurance"},
 
-async function submitToFeishu(){
-  const name=document.getElementById("userName").value.trim();
-  const wechat=document.getElementById("userWeChat").value.trim();
-  const payload={"姓名":name,"微信":wechat,"困境":selectedProblems,"前五优势":top5.map(x=>x[0]),"前十优势":top10.map(x=>x[0]),"完整分析":fullAnalysisText};
-  try{await fetch(https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});}
-  catch(e){console.error("提交失败",e);}
-}
+// 四选题（16题）
+{type:"four",text:"当面对新项目时，你通常会：",options:["立刻行动","先做规划","咨询他人","拖延"],map:"行动 Activator"},
+{type:"four",text:"在解决问题时，你倾向于：",options:["数据分析","头脑风暴","直觉判断","寻求他人建议"],map:"分析 Analytical"},
+{type:"four",text:"你在团队中更擅长：",options:["激励他人","协调资源","提出创意","保持专注"],map:"统筹 Arranger"},
+{type:"four",text:"面对复杂信息，你通常：",options:["快速做决策","深入思考","寻求更多资料","请教他人"],map:"思维 Intellection"},
+{type:"four",text:"你在达成目标时最注重：",options:["速度和效率","过程规划","团队协作","学习成长"],map:"成就 Achiever"},
+{type:"four",text:"在处理人际冲突时，你会：",options:["主动调解","倾听感受","提出方案","保持中立"],map:"体谅 Empathy"},
+{type:"four",text:"你喜欢的工作节奏是：",options:["快速变化","有条不紊","自由灵活","按计划推进"],map:"适应 Adaptability"},
+{type:"four",text:"你表达意见时更倾向：",options:["直接清晰","温和婉转","用数据说话","幽默引导"],map:"沟通 Communication"},
+{type:"four",text:"你在压力下的表现：",options:["立即行动","分析情况","寻求帮助","保持冷静"],map:"行动 Activator"},
+{type:"four",text:"你在学习新知识时通常：",options:["阅读书籍","参加课程","向他人请教","通过实践学习"],map:"学习 Learner"},
+{type:"four",text:"在团队中你最擅长：",options:["鼓舞士气","建立关系","解决问题","规划安排"],map:"积极 Positivity"},
+{type:"four",text:"你做决策时主要依据：",options:["数据和逻辑","直觉和经验","他人建议","目标导向"],map:"战略 Strategic"},
+{type:"four",text:"你喜欢的工作风格：",options:["自由发挥","目标明确","结构化流程","团队协作"],map:"专注 Focus"},
+{type:"four",text:"你更在意自己的成就还是过程？",options:["成就结果","享受过程","两者平衡","随遇而安"],map:"成就 Achiever"},
+{type:"four",text:"在社交场合，你通常：",options:["主动结识新朋友","维持熟人关系","观察他人","倾听他人"],map:"交往 Woo"},
+{type:"four",text:"你处理任务时倾向：",options:["快速完成","计划周全","与他人协作","不断优化"],map:"统筹 Arranger"}
+  ];
+
+  let current=0,answers={},top5=[],top10=[],fullAnalysisText="";
+
+  // ======== 页面跳转函数 ========
+  function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById("page"+id).classList.add("active");}
+
+  // STEP1/STEP2按钮绑定
+  document.getElementById("startBtn").addEventListener("click", ()=>go(2));
+  document.getElementById("backToStep1").addEventListener("click", ()=>go(1));
+  document.getElementById("goToTest").addEventListener("click", ()=>{
+    const name=document.getElementById("userName").value.trim();
+    const wechat=document.getElementById("userWeChat").value.trim();
+    if(!name||!wechat){ alert("请输入姓名和微信"); return; }
+    if(selectedProblems.length===0){ alert("请选择至少一项困境"); return; }
+    go(3); renderQuestion();
+  });
+
+  // ======== 测试题逻辑 ========
+  function renderQuestion(){
+    let q=questions[current];
+    let html=`<p><b>${current+1}/${questions.length}</b> ${q.text}</p>`;
+    if(q.type==="binary"){
+      html+=`<div class="option"><input type="radio" name="q" value="1"> 符合</div>
+             <div class="option"><input type="radio" name="q" value="0"> 不符合</div>`;
+    }else{
+      q.options.forEach((opt,i)=>{html+=`<div class="option"><input type="radio" name="q" value="${i+1}"> ${opt}</div>`;});
+    }
+    document.getElementById("questionBox").innerHTML=html;
+    if(answers[current]){
+      document.querySelectorAll("input[name=q]").forEach(r=>{if(r.value==answers[current]) r.checked=true;});
+    }
+    document.getElementById("nextBtn").innerText=(current===questions.length-1)?"查看结果":"下一题";
+    document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";
+  }
+  window.next=function(){
+    let checked=document.querySelector("input[name=q]:checked");
+    if(!checked){alert("请选择一个选项");return;}
+    answers[current]=checked.value;
+    if(current<questions.length-1){current++;renderQuestion();}else{calculate();}
+  }
+  window.prev=function(){if(current>0){current--;renderQuestion();}
+
+  }
+
+  // ======== 结果计算 ========
+  function calculate(){
+    for(let k in strengths){strengths[k]=0;}
+    questions.forEach((q,i)=>{
+      if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
+      if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
+    });
+    let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
+    top5=sorted.slice(0,5); top10=sorted.slice(0,10);
+    fullAnalysisText=`你的优势完整排序为：${top10.map(x=>x[0]).join("、")}`;
+    go("resultPage");
+    let html="<h3>✨ 前5大优势</h3><ol>";
+    top5.forEach(s=>html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`);
+    html+="</ol><h3>🔒 潜在优势</h3><div class='blur'><ol>";
+    top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);html+="</ol></div>";
+    let top5names=top5.map(x=>x[0].split(" ")[0]).join("、");
+    html+=`<h3>🧠 初步分析</h3><p>根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略，也有执行力与理解他人的能力，适合在有挑战又允许自主发挥的环境中发展。</p>
+    <p class="blur">其他潜在优势在不同场景可能发挥作用，帮助优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。</p>`;
+    document.getElementById("result").innerHTML=html;
+    submitToFeishu();
+  }
+
+  async function submitToFeishu(){
+    const name=document.getElementById("userName").value.trim();
+    const wechat=document.getElementById("userWeChat").value.trim();
+    const payload={
+      "姓名":name,
+      "微信":wechat,
+      "困境":selectedProblems,
+      "前五优势":top5.map(x=>x[0]),
+      "前十优势":top10.map(x=>x[0]),
+      "完整分析":fullAnalysisText
+    };
+    try{
+      await fetch("https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+      console.log("提交成功");
+    }catch(e){console.error("提交失败",e);}
+  }
+
+});
 </script>
 </body>
 </html>
