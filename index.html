@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>职业优势探索测评</title>
+<style>
+body{
+font-family: "Helvetica Neue", Arial;
+background: linear-gradient(135deg,#eef2ff,#f8fafc);
+margin:0;
+padding:0;
+color:#333;
+}
+.container{
+max-width:800px;
+margin:40px auto;
+background:white;
+padding:40px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+h1,h2{
+text-align:center;
+}
+button{
+background:#4f46e5;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:8px;
+cursor:pointer;
+margin-top:20px;
+font-size:16px;
+}
+button:hover{
+background:#4338ca;
+}
+.option{
+margin:8px 0;
+padding:8px;
+}
+.hidden{display:none;}
+.blur{
+filter: blur(6px);
+}
+.fade{
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
+overflow:hidden;
+}
+.question{
+margin-bottom:25px;
+padding:15px;
+background:#f9fafb;
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- STEP 1 -->
+<div id="step1">
+<h1>职业优势探索测评</h1>
+<p>
+欢迎参加本次优势探索测试。<br><br>
+本测试为初步探索版本，参考优势理论设计。<br>
+部分题目为“符合 / 不符合”两选一，<br>
+部分题目为四选一。<br><br>
+不需要过度思考，请选择更偏向你的一项。<br>
+未来不同阶段可重复测试，对比变化。
+</p>
+<button onclick="nextStep(2)">开始测试 →</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" class="hidden">
+<h2>第二步：了解你的现状</h2>
+<p>你目前最想解决的问题是？（最多选择3项）</p>
+
+<div class="option"><input type="checkbox" name="pain"> 😩 每天上班像上坟，严重倦怠，意义感匮乏</div>
+<div class="option"><input type="checkbox" name="pain"> 🔄 职场瓶颈期，想改变却不敢裸辞</div>
+<div class="option"><input type="checkbox" name="pain"> 🌍 留学想法很多，但对政策/择校/专业不了解</div>
+<div class="option"><input type="checkbox" name="pain"> 🎓 不清楚留学与职业如何衔接</div>
+<div class="option"><input type="checkbox" name="pain"> 👩‍🏫 教师赛道受限，想转型国际教育/海外路径</div>
+<div class="option"><input type="checkbox" name="pain"> 🧠 焦虑内耗严重，反复纠结迟迟无法行动</div>
+
+<button onclick="validatePain()">进入正式测试 →</button>
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" class="hidden">
+<h2>第三步：正式测试</h2>
+<div id="quiz"></div>
+<button onclick="calculate()">提交测试</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden"></div>
+
+</div>
+
+<script>
+
+function nextStep(step){
+document.getElementById("step1").classList.add("hidden");
+document.getElementById("step2").classList.add("hidden");
+document.getElementById("step3").classList.add("hidden");
+document.getElementById("step"+step).classList.remove("hidden");
+}
+
+function validatePain(){
+let checked = document.querySelectorAll('input[name="pain"]:checked');
+if(checked.length>3){
+alert("最多选择3项");
+return;
+}
+nextStep(3);
+}
+
+let strengths={
+"学习":0,"战略":0,"体谅":0,"成就":0,"分析":0,
+"沟通":0,"责任":0,"行动":0,"适应":0,"统筹":0,
+"专注":0,"信念":0,"交往":0,"理念":0,"审慎":0
+};
+
+let questions=[
+{type:2,text:"我经常主动寻找新知识、新课程或新技能来提升自己。",strength:"学习"},
+{type:2,text:"面对复杂问题，我习惯先整体思考路径与方向。",strength:"战略"},
+{type:2,text:"我很容易觉察到他人的情绪变化。",strength:"体谅"},
+{type:2,text:"完成目标本身会带给我强烈满足感。",strength:"成就"},
+{type:2,text:"做决策前我会反复权衡风险。",strength:"审慎"},
+{type:4,text:"当面对新机会时，我通常：",
+options:[
+["立刻行动尝试","行动"],
+["深入分析利弊","分析"],
+["先考虑长期方向","战略"],
+["询问他人感受","体谅"]
+]},
+{type:4,text:"团队分工混乱时，我更可能：",
+options:[
+["主动统筹协调","统筹"],
+["自己默默承担任务","责任"],
+["鼓舞士气沟通","沟通"],
+["专注完成自己部分","专注"]
+]}
+];
+
+let quizDiv=document.getElementById("quiz");
+
+questions.forEach((q,i)=>{
+let div=document.createElement("div");
+div.className="question";
+let html="<p>"+(i+1)+". "+q.text+"</p>";
+if(q.type==2){
+html+=`<input type="radio" name="q${i}" value="1"> 符合
+<input type="radio" name="q${i}" value="0"> 不符合`;
+}else{
+q.options.forEach(opt=>{
+html+=`<div><input type="radio" name="q${i}" value="${opt[1]}"> ${opt[0]}</div>`;
+});
+}
+div.innerHTML=html;
+quizDiv.appendChild(div);
+});
+
+function calculate(){
+questions.forEach((q,i)=>{
+let selected=document.querySelector(`input[name="q${i}"]:checked`);
+if(!selected)return;
+if(q.type==2 && selected.value=="1"){
+strengths[q.strength]+=1;
+}
+if(q.type==4){
+strengths[selected.value]+=1;
+}
+});
+
+let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
+let top5=sorted.slice(0,5);
+let next5=sorted.slice(5,10);
+
+let resultHTML="<h2>你的优势结果</h2><h3>✨ 前5大核心优势</h3><ol>";
+
+let intro={
+"学习":"持续渴望成长，对知识保持高度热情。",
+"战略":"擅长从复杂局面中看清方向。",
+"体谅":"对他人情绪敏感，富有同理心。",
+"成就":"强烈驱动力，喜欢完成任务。",
+"分析":"理性思考，重视逻辑与数据。",
+"沟通":"表达清晰，善于影响他人。",
+"责任":"承诺感强，值得信赖。",
+"行动":"执行迅速，推动事情发生。",
+"适应":"在变化中保持稳定。",
+"统筹":"善于组织资源与流程。",
+"专注":"高度聚焦目标。",
+"信念":"价值观清晰坚定。",
+"交往":"善于建立深度关系。",
+"理念":"热衷思考概念与可能性。",
+"审慎":"谨慎评估风险。"
+};
+
+top5.forEach(s=>{
+resultHTML+=`<li><b>${s[0]}</b><br><small>${intro[s[0]]}</small></li>`;
+});
+
+resultHTML+="</ol><h3>🔒 其他潜在优势</h3><div class='blur'><ol>";
+next5.forEach(s=>{
+resultHTML+=`<li>${s[0]}</li>`;
+});
+resultHTML+="</ol></div>";
+
+resultHTML+=`
+<h3>🧠 初步分析</h3>
+<p class="fade">
+你的优势组合呈现出独特的内在驱动力与思考模式。
+前五项优势之间存在相互强化的结构，
+它们将影响你未来的职业路径选择、
+环境偏好以及决策方式……
+</p>
+<p><b>详细优势解读 + 职业路径建议<br>
+欢迎预约一对一深度咨询。</b></p>
+`;
+
+document.getElementById("result").innerHTML=resultHTML;
+document.getElementById("step3").classList.add("hidden");
+document.getElementById("result").classList.remove("hidden");
+}
+
+</script>
+</body>
+</html>
