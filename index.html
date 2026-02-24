@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>盖洛普优势探索 · 30题修正版</title>
+<title>盖洛普优势探索 · 飞书数据版</title>
 <style>
 body{
 margin:0;
@@ -64,9 +64,19 @@ display:flex;
 justify-content:space-between;
 margin-top:20px;
 }
+input[type=text]{padding:8px; font-size:14px; width:100%; margin-top:5px; border-radius:6px; border:1px solid #ccc;}
 @keyframes fade{
 from{opacity:0;transform:translateY(10px);}
 to{opacity:1;transform:translateY(0);}
+}
+
+/* 手机端自适应 */
+@media (max-width:600px){
+  .page{margin:20px; padding:20px; border-radius:15px;}
+  h1,h2{font-size:20px;}
+  button{padding:12px 20px; font-size:14px;}
+  .option{padding:12px; font-size:14px;}
+  .progress-wrap{height:8px;}
 }
 </style>
 </head>
@@ -88,7 +98,16 @@ to{opacity:1;transform:translateY(0);}
 <!-- STEP2 -->
 <div class="page" id="page2">
 <h2>你目前的面临的困境/最想解决的问题是什么？（最多选3项）</h2>
-<div id="problemBox"></div>
+
+<div>
+<label>姓名：<input type="text" id="userName"></label>
+</div>
+<div>
+<label>微信：<input type="text" id="userWeChat"></label>
+</div>
+
+<div id="problemBox" style="margin-top:20px;"></div>
+
 <div style="text-align:center;margin-top:30px;">
 <button onclick="go(1)">返回</button>
 <button onclick="goTest()">进入正式测试</button>
@@ -163,6 +182,7 @@ problemBox.appendChild(div);
 
 /* 题库（16四选 + 14双选） */
 const questions=[
+/* 四选题 */
 {type:"four",text:"当面对新项目时，你通常会：",options:["立刻开始行动","先做完整规划","咨询有经验的人","拖延一段时间"] ,map:"行动 Activator"},
 {type:"four",text:"当你做职业决策时，更倾向于：",options:["分析数据与逻辑","考虑长期战略","听从内心判断","咨询他人意见"],map:"战略 Strategic"},
 {type:"four",text:"团队出现冲突时，你更可能：",options:["主动调解","保持观察","避免参与","据理力争"],map:"体谅 Empathy"},
@@ -179,7 +199,7 @@ const questions=[
 {type:"four",text:"面对未知机会时，你：",options:["主动尝试","谨慎观察","担忧失败","拒绝变化"],map:"自信 Self-Assurance"},
 {type:"four",text:"工作状态最好时，你：",options:["高度专注","与人互动","自由探索","轻松执行"],map:"专注 Focus"},
 {type:"four",text:"社交场合中，你：",options:["主动破冰","慢慢熟悉","等待别人靠近","不太参与"],map:"交往 Woo"},
-
+/* 双选题 */
 {type:"binary",text:"我做事追求效率与完成度。",map:"成就 Achiever"},
 {type:"binary",text:"我喜欢深度思考问题。",map:"思维 Intellection"},
 {type:"binary",text:"我天生乐观。",map:"积极 Positivity"},
@@ -202,7 +222,6 @@ let answers={};
 function renderQuestion(){
 let q=questions[current];
 let html=`<p><b>${current+1}/30</b> ${q.text}</p>`;
-
 if(q.type==="binary"){
 html+=`<div class="option"><input type="radio" name="q" value="1"> 符合</div>
 <div class="option"><input type="radio" name="q" value="0"> 不符合</div>`;
@@ -211,69 +230,56 @@ q.options.forEach((opt,i)=>{
 html+=`<div class="option"><input type="radio" name="q" value="${i+1}"> ${opt}</div>`;
 });
 }
-
 document.getElementById("questionBox").innerHTML=html;
-
 if(answers[current]){
-document.querySelectorAll("input[name=q]").forEach(r=>{
-if(r.value==answers[current]) r.checked=true;
-});
+document.querySelectorAll("input[name=q]").forEach(r=>{if(r.value==answers[current]) r.checked=true;});
 }
-
 document.getElementById("nextBtn").innerText =
 (current===questions.length-1)?"查看结果":"下一题";
-
 updateProgress();
 }
 
-function updateProgress(){
-document.getElementById("progress").style.width=
-((current+1)/questions.length*100)+"%";
-}
+function updateProgress(){document.getElementById("progress").style.width=((current+1)/questions.length*100)+"%";}
 
 function next(){
 let checked=document.querySelector("input[name=q]:checked");
 if(!checked){alert("请选择一个选项");return;}
 answers[current]=checked.value;
-
-if(current<questions.length-1){current++;renderQuestion();}
-else{calculate();}
+if(current<questions.length-1){current++;renderQuestion();}else{calculate();}
 }
 
 function prev(){if(current>0){current--;renderQuestion();}}
 
+let top5=[], top10=[], fullAnalysisText="";
 function calculate(){
 for(let k in strengths){strengths[k]=0;}
 questions.forEach((q,i)=>{
 if(q.type==="binary" && answers[i]=="1") strengths[q.map]+=2;
 if(q.type==="four" && answers[i]) strengths[q.map]+=parseInt(answers[i]);
 });
-
 let sorted=Object.entries(strengths).sort((a,b)=>b[1]-a[1]);
-let top5=sorted.slice(0,5);
-let top10=sorted.slice(0,10);
+top5=sorted.slice(0,5);
+top10=sorted.slice(0,10);
+fullAnalysisText=`你的优势完整排序为：${top10.map(x=>x[0]).join("、")}。前5优势分别为：${top5.map(x=>x[0]).join("、")}。分析详见页面。`;
 
 go("resultPage");
-
 let html="<h3>✨ 前5大优势</h3><ol>";
 top5.forEach(s=>html+=`<li><b>${s[0]}</b><br><small>${strengthIntro[s[0]]}</small></li>`);
 html+="</ol>";
-
 html+="<h3>🔒 潜在优势</h3><div class='blur'><ol>";
-top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);
-html+="</ol></div>";
-
+top10.slice(5).forEach(s=>html+=`<li>${s[0]}</li>`);html+="</ol></div>";
 let top5names=top5.map(x=>x[0].split(" ")[0]).join("、");
-
 html+=`<h3>🧠 初步分析</h3>
 <p>
-根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略思维，也有行动力与执行力，且善于理解他人，适合在有挑战又允许自主发挥的环境中发展。
+根据你的前5大优势（${top5names}），你在决策和行动中体现了核心能力：既有规划与战略，也有执行力与理解他人的能力，适合在有挑战又允许自主发挥的环境中发展。
 </p>
 <p class="blur">
-其他潜在优势也可能在不同场景发挥作用，帮助你优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。
+其他潜在优势在不同场景可能发挥作用，帮助优化团队协作和个人成长。详细优势深度解读与职业路径规划，欢迎预约一对一咨询。
 </p>`;
-
 document.getElementById("result").innerHTML=html;
+
+// 自动提交到飞书
+submitToFeishu();
 }
 
 function go(id){
@@ -283,8 +289,29 @@ else document.getElementById(id).classList.add("active");
 }
 
 function goTest(){
-if(selectedProblems.length===0){alert("请选择至少一项困境");return;}
+const name=document.getElementById("userName").value.trim();
+const wechat=document.getElementById("userWeChat").value.trim();
+if(!name || !wechat){alert("请输入姓名和微信"); return;}
+if(selectedProblems.length===0){alert("请选择至少一项困境"); return;}
 go(3);renderQuestion();
+}
+
+// 飞书Webhook提交
+async function submitToFeishu(){
+const name=document.getElementById("userName").value.trim();
+const wechat=document.getElementById("userWeChat").value.trim();
+const payload={
+"姓名":name,
+"微信":wechat,
+"困境":selectedProblems,
+"前五优势":top5.map(x=>x[0]),
+"前十优势":top10.map(x=>x[0]),
+"完整分析":fullAnalysisText
+};
+try{
+await fetch(https://my.feishu.cn/share/base/form/shrcnpYsKT4EXDGoy1kaICHxQQc,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+console.log("提交成功");
+}catch(e){console.error("提交失败",e);}
 }
 </script>
 </body>
